@@ -17,26 +17,26 @@ function addDocument(docId, text) {
 function search(query) {
   if (!query) return [];
   const tokens = tokenize(query);
-  const documentArray = _getDocumentsIdByTokens(tokens);
-  const documentsWithAllQueryTokens = _setsIntersect(documentArray);
-  return documentsWithAllQueryTokens;
+  if (tokens.length === 0) return [];
+  const sets = _collectTokenSets(tokens);
+  if (sets.length === 0) return [];
+  _sortBySize(sets);
+  return _intersectSets(sets);
 }
 
-function _getDocumentsIdByTokens(tokens) {
-  if (tokens.length === 1) {
-    return invertedIndex[tokens] ? invertedIndex[tokens] : [];
-  }
-  const documentArray = [];
+function _collectTokenSets(tokens) {
+  const sets = [];
   for (const token of tokens) {
-    if (!invertedIndex[token]) return [];
-    documentArray.push(invertedIndex[token]);
+    const docSet = invertedIndex[token];
+    if (!docSet) return [];
+    sets.push(docSet);
   }
-  return documentArray;
+  return sets;
 }
 
-function _setsIntersect(sets) {
+function _intersectSets(sets) {
   if (!sets || sets.length === 0) return [];
-  if (sets.length === 1) return sets;
+  if (sets.length === 1) return Array.from(sets[0]);
   const intersectArray = [];
   const mainSet = sets[0];
   let notFound = false;
@@ -53,6 +53,10 @@ function _setsIntersect(sets) {
     notFound = false;
   }
   return intersectArray;
+}
+
+function _sortBySize(sets) {
+  sets.sort((a, b) => a.size - b.size);
 }
 
 module.exports = { invertedIndex, addDocument, search };
