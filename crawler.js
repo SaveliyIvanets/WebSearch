@@ -65,6 +65,9 @@ async function _fetchHtml(url) {
 }
 function _extractPageData(html) {
   const $ = cheerio.load(html);
+  $(
+    "script, style, noscript, template, svg, nav, footer, header, aside, form",
+  ).remove();
   const allText = $("body").text();
   return { $, allText };
 }

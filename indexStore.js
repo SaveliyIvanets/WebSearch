@@ -1,6 +1,7 @@
 const { tokenize } = require("./tokenizer");
+const fs = require("fs");
 
-const invertedIndex = {};
+let invertedIndex = {};
 
 function addDocument(docId, text) {
   const tokens = tokenize(text);
@@ -13,7 +14,32 @@ function addDocument(docId, text) {
     invertedIndex[token].add(docId);
   }
 }
+function saveIndexToDisk(filePath) {
+  const copyIndex = {};
+  for (const [key, value] of Object.entries(invertedIndex)) {
+    copyIndex[key] = Array.from(value);
+  }
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(copyIndex));
+  } catch (error) {
+    console.error("Failed to save index to disk:", error);
+    throw error;
+  }
+}
 
+function loadIndexFromDisk(filePath) {
+  invertedIndex = {};
+  try {
+    const rawData = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    for (const [key, value] of Object.entries(rawData)) {
+      invertedIndex[key] = new Set(value);
+    }
+  } catch (error) {
+    console.error("Failed to load index:", error);
+    throw error;
+  }
+  return invertedIndex;
+}
 function search(query) {
   if (!query) return [];
   const tokens = tokenize(query);
@@ -39,8 +65,8 @@ function _intersectSets(sets) {
   if (sets.length === 1) return Array.from(sets[0]);
   const intersectArray = [];
   const mainSet = sets[0];
-  let notFound = false;
   for (const elem of mainSet) {
+    let notFound = false;
     for (let i = 1; i < sets.length; i++) {
       if (!sets[i].has(elem)) {
         notFound = true;
@@ -50,7 +76,6 @@ function _intersectSets(sets) {
     if (!notFound) {
       intersectArray.push(elem);
     }
-    notFound = false;
   }
   return intersectArray;
 }
@@ -59,4 +84,10 @@ function _sortBySize(sets) {
   sets.sort((a, b) => a.size - b.size);
 }
 
-module.exports = { invertedIndex, addDocument, search };
+module.exports = {
+  invertedIndex,
+  addDocument,
+  search,
+  saveIndexToDisk,
+  loadIndexFromDisk,
+};
