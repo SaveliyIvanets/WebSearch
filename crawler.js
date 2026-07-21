@@ -10,25 +10,12 @@ async function crawl(startUrl, maxPages = 20) {
   queue.push(startUrl);
   const startUrlObj = new URL(startUrl);
   const baseDomain = startUrlObj.hostname;
-  while (queue.length !== 0 && visited.size < maxPages) {
-    const currentUrl = queue.shift();
-    if (visited.has(currentUrl)) continue; // for future work when there will be several workers
-    visited.add(currentUrl);
-    const html = await _fetchHtml(currentUrl);
-    if (!html) {
-      visited.delete(currentUrl);
-      continue;
-    }
-    const { $, allText } = _extractPageData(html);
-    addDocument(currentUrl, allText);
-    const foundLinks = _extractInternalLinks($, currentUrl, baseDomain);
-    for (const link of foundLinks) {
-      if (!visited.has(link) && !queue.includes(link)) {
-        queue.push(link);
-      }
-    }
-    await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
+  const WORKER_COUNT = 3;
+  const workers = [];
+  for (let i = 0; i < WORKER_COUNT; i++) {
+    workers.push(_worker(i, baseDomain, maxPages));
   }
+  await Promise.all(workers);
 }
 function _extractInternalLinks($, currentUrl, baseDomain) {
   const internalLinks = [];
@@ -70,5 +57,36 @@ function _extractPageData(html) {
   ).remove();
   const allText = $("body").text();
   return { $, allText };
+}
+async function _worker(id, baseDomain, maxPages) {
+  while (visited.size < maxPages) {
+    if (queue.length === 0) {
+      await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
+      if (queue.length === 0) {
+        break;
+      }
+      continue;
+    }
+    const currentUrl = queue.shift();
+    if (visited.has(currentUrl)) continue;
+    visited.add(currentUrl);
+    console.log(
+      `[Worker ${id}] Качаю (${visited.size}/${maxPages}): ${currentUrl}`,
+    );
+    const html = await _fetchHtml(currentUrl);
+    if (!html) {
+      visited.delete(currentUrl);
+      continue;
+    }
+    const { $, allText } = _extractPageData(html);
+    addDocument(currentUrl, allText);
+    const foundLinks = _extractInternalLinks($, currentUrl, baseDomain);
+    for (const link of foundLinks) {
+      if (!visited.has(link) && !queue.includes(link)) {
+        queue.push(link);
+      }
+    }
+    await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
+  }
 }
 module.exports = { crawl };
