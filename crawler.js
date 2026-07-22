@@ -3,11 +3,23 @@ const { URL } = require("url");
 const cheerio = require("cheerio");
 const { addDocument } = require("./indexStore");
 const visited = new Set();
-const queue = [];
+const queue = new Set();
 const DELAY_MS = 1000;
-
+const disallowedPaths = [];
+function _pushToQueue(url) {
+  if (!visited.has(url)) {
+    queue.add(url);
+  }
+}
+function _popFromQueue() {
+  const firstUrl = queue.values().next().value;
+  if (firstUrl) {
+    queue.delete(firstUrl);
+  }
+  return firstUrl;
+}
 async function crawl(startUrl, maxPages = 20) {
-  queue.push(startUrl);
+  _pushToQueue(startUrl);
   const startUrlObj = new URL(startUrl);
   const baseDomain = startUrlObj.hostname;
   const WORKER_COUNT = 3;
@@ -30,6 +42,7 @@ function _extractInternalLinks($, currentUrl, baseDomain) {
       return;
     try {
       const absoluteUrl = new URL(href, currentUrl);
+      absoluteUrl.hash = "";
       if (absoluteUrl.hostname === baseDomain) {
         internalLinks.push(absoluteUrl.href);
       }
@@ -60,14 +73,14 @@ function _extractPageData(html) {
 }
 async function _worker(id, baseDomain, maxPages) {
   while (visited.size < maxPages) {
-    if (queue.length === 0) {
+    if (queue.size === 0) {
       await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
-      if (queue.length === 0) {
+      if (queue.size === 0) {
         break;
       }
       continue;
     }
-    const currentUrl = queue.shift();
+    const currentUrl = _popFromQueue();
     if (visited.has(currentUrl)) continue;
     visited.add(currentUrl);
     console.log(
@@ -75,18 +88,16 @@ async function _worker(id, baseDomain, maxPages) {
     );
     const html = await _fetchHtml(currentUrl);
     if (!html) {
-      visited.delete(currentUrl);
       continue;
     }
     const { $, allText } = _extractPageData(html);
     addDocument(currentUrl, allText);
     const foundLinks = _extractInternalLinks($, currentUrl, baseDomain);
     for (const link of foundLinks) {
-      if (!visited.has(link) && !queue.includes(link)) {
-        queue.push(link);
-      }
+      _pushToQueue(link);
     }
     await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
   }
 }
+
 module.exports = { crawl };
