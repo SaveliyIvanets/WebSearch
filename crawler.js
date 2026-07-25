@@ -5,9 +5,9 @@ const { addDocument } = require("./indexStore");
 const visited = new Set();
 const queue = new Set();
 const DELAY_MS = 1000;
-const disallowedPaths = [];
+const disallowedPaths = new Set();
 function _pushToQueue(url) {
-  if (!visited.has(url)) {
+  if (!visited.has(url) && !_isDisallowed(url)) {
     queue.add(url);
   }
 }
@@ -19,10 +19,11 @@ function _popFromQueue() {
   return firstUrl;
 }
 async function crawl(startUrl, maxPages = 20) {
-  _pushToQueue(startUrl);
   const startUrlObj = new URL(startUrl);
   const baseDomain = startUrlObj.hostname;
-  const WORKER_COUNT = 3;
+  await _loadRobotsTxt(startUrl, baseDomain);
+  _pushToQueue(startUrl);
+  const WORKER_COUNT = 10;
   const workers = [];
   for (let i = 0; i < WORKER_COUNT; i++) {
     workers.push(_worker(i, baseDomain, maxPages));
@@ -99,5 +100,45 @@ async function _worker(id, baseDomain, maxPages) {
     await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
   }
 }
-
+async function _loadRobotsTxt(origin) {
+  const robotsUrl = new URL("/robots.txt", origin);
+  const html = await _fetchHtml(robotsUrl.href);
+  if (!html) return;
+  const lines = html.split("\n");
+  let forUs = false;
+  for (const line of lines) {
+    const [key, ...val] = line.trim().split(":");
+    const trimmedKey = key.trim().toLowerCase();
+    const trimmedValue = val.join(":").trim();
+    if (trimmedKey === "user-agent") {
+      if (trimmedValue === "*") {
+        forUs = true;
+      } else {
+        forUs = false;
+      }
+      continue;
+    }
+    if (forUs) {
+      _addToDisallowedPaths(trimmedKey, trimmedValue);
+    }
+  }
+}
+function _addToDisallowedPaths(key, value) {
+  if (key === "disallow" && value.length > 0) {
+    disallowedPaths.add(value);
+  }
+}
+function _isDisallowed(url) {
+  try {
+    const { pathname } = new URL(url);
+    for (const disallowedPath of disallowedPaths) {
+      if (pathname.startsWith(disallowedPath)) {
+        return true;
+      }
+    }
+  } catch (e) {
+    return false;
+  }
+  return false;
+}
 module.exports = { crawl };
