@@ -3,10 +3,13 @@ const { URL } = require("url");
 const cheerio = require("cheerio");
 const { addDocument } = require("./indexStore");
 class Crawler {
-  constructor() {
+  constructor(options = {}) {
     this.visited = new Set();
     this.queue = new Set();
     this.disallowedPaths = new Set();
+    this.delayMs = options.delayMs ?? 1000;
+    this.workerCount = options.workerCount ?? 10;
+    this.activeWorkers = 0;
   }
   _pushToQueue(url) {
     if (!this.visited.has(url) && !this._isDisallowed(url)) {
@@ -21,14 +24,12 @@ class Crawler {
     return firstUrl;
   }
   async crawl(startUrl, maxPages = 20) {
-    const DELAY_MS = 1000;
     const startUrlObj = new URL(startUrl);
     const baseDomain = startUrlObj.hostname;
     await this._loadRobotsTxt(startUrl);
     this._pushToQueue(startUrl);
-    const WORKER_COUNT = 10;
     const workers = [];
-    for (let i = 0; i < WORKER_COUNT; i++) {
+    for (let i = 0; i < this.workerCount; i++) {
       workers.push(this._worker(i, baseDomain, maxPages));
     }
     await Promise.all(workers);
@@ -65,7 +66,11 @@ class Crawler {
         responseType: "text",
       });
 
-      if (!response.headers["content-type"]?.includes("text/html")) return null;
+      if (
+        !response.headers["content-type"]?.includes("text/html") &&
+        !response.headers["content-type"]?.includes("text/plain")
+      )
+        return null;
       return response.data;
     } catch (err) {
       return null;
@@ -82,11 +87,14 @@ class Crawler {
   async _worker(id, baseDomain, maxPages) {
     while (this.visited.size < maxPages) {
       if (this.queue.size === 0) {
-        await new Promise((resolve) => setTimeout(resolve, this.DELAY_MS));
-        if (this.queue.size === 0) {
+        if (this.activeWorkers === 0) {
           break;
         }
+        await new Promise((resolve) => setTimeout(resolve, this.delayMs));
         continue;
+      }
+      if (this.visited.size >= maxPages) {
+        break;
       }
       const currentUrl = this._popFromQueue();
       if (this.visited.has(currentUrl)) continue;
@@ -94,7 +102,9 @@ class Crawler {
       console.log(
         `[Worker ${id}] Качаю (${this.visited.size}/${maxPages}): ${currentUrl}`,
       );
+      this.activeWorkers++;
       const html = await this._fetchHtml(currentUrl);
+      this.activeWorkers--;
       if (!html) {
         continue;
       }
@@ -104,7 +114,7 @@ class Crawler {
       for (const link of foundLinks) {
         this._pushToQueue(link);
       }
-      await new Promise((resolve) => setTimeout(resolve, this.DELAY_MS));
+      await new Promise((resolve) => setTimeout(resolve, this.delayMs));
     }
   }
   async _loadRobotsTxt(origin) {
