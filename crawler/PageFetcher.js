@@ -28,4 +28,4 @@ class PageFetcher {
   }
 }
 
-module.exports = { Fetcher };
+module.exports = { PageFetcher };
