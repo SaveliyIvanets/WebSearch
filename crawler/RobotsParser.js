@@ -1,4 +1,3 @@
-const { PageFetcher } = require("./PageFetcher");
 class RobotsParser {
   constructor(pageFetcher) {
     this.disallowedPaths = new Set();
