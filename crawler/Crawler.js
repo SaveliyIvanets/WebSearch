@@ -12,6 +12,9 @@ class Crawler {
     this.linkExtractor = options.linkExtractor;
     this.robotsParser = options.robotsParser;
     this.indexStore = options.indexStore;
+
+    this.maxPages = options.maxPages ?? Infinity;
+    //this.maxDepth = options.maxDepth ?? Infinity; later
   }
   async crawl(startUrl) {
     const startUrlObj = new URL(startUrl);
@@ -30,6 +33,7 @@ class Crawler {
         htmlParser: this.htmlParser,
         linkExtractor: this.linkExtractor,
         indexStore: this.indexStore,
+        maxPages: this.maxPages,
       });
 
       workers.push(worker.run(i, baseHostname));

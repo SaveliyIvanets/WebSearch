@@ -9,9 +9,14 @@ class Worker {
     this.pageFetcher = options.pageFetcher;
     this.htmlParser = options.htmlParser;
     this.linkExtractor = options.linkExtractor;
+    this.maxPages = options.maxPages ?? Infinity;
+    //this.maxDepth = options.maxDepth ?? Infinity; later
   }
   async run(id, baseDomain) {
     while (true) {
+      if (this.visited.size >= this.maxPages) {
+        break;
+      }
       if (this.queue.isEmpty()) {
         if (this.state.activeWorkers === 0) {
           break;
