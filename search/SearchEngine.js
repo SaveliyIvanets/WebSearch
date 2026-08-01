@@ -1,4 +1,4 @@
-const { Tokenizer } = require("../indexer/Tokenizer");
+import { Tokenizer } from "../indexer/Tokenizer.js";
 class SearchEngine {
   constructor(indexStore) {
     this.indexStore = indexStore;
@@ -48,3 +48,4 @@ class SearchEngine {
     return sets.sort((a, b) => a.size - b.size);
   }
 }
+export { SearchEngine };

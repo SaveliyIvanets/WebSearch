@@ -1,4 +1,4 @@
-const { URL } = require("url");
+import { URL } from "url";
 class UrlNormalizer {
   static normalize(rawUrl) {
     try {
@@ -20,4 +20,4 @@ class UrlNormalizer {
     }
   }
 }
-module.exports = { UrlNormalizer };
+export { UrlNormalizer };

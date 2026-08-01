@@ -24,4 +24,4 @@ class Tokenizer {
     return Array.from(new Set(tokens));
   }
 }
-module.exports = { Tokenizer };
+export { Tokenizer };

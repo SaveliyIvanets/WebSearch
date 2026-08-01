@@ -1,4 +1,3 @@
-const { addDocument } = require("./indexStore");
 class Worker {
   constructor(options = {}) {
     this.queue = options.queue;
@@ -10,6 +9,7 @@ class Worker {
     this.htmlParser = options.htmlParser;
     this.linkExtractor = options.linkExtractor;
     this.maxPages = options.maxPages ?? Infinity;
+    this.indexStore = options.indexStore;
     //this.maxDepth = options.maxDepth ?? Infinity; later
   }
   async run(id, baseDomain) {
@@ -34,7 +34,7 @@ class Worker {
         continue;
       }
       const { $, text } = this.htmlParser.parse(html);
-      addDocument(currentUrl, text);
+      this.indexStore.addDocument(currentUrl, text);
       const foundLinks = this.linkExtractor.extractInternalLinks(
         $,
         currentUrl,
@@ -49,3 +49,4 @@ class Worker {
     }
   }
 }
+export { Worker };

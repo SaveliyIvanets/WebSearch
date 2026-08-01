@@ -1,4 +1,4 @@
-const cheerio = require("cheerio");
+import * as cheerio from "cheerio";
 class HtmlParser {
   static parse(html) {
     const REMOVED_TAGS =
@@ -6,7 +6,7 @@ class HtmlParser {
     const $ = cheerio.load(html);
     $(REMOVED_TAGS).remove();
     const text = $("body").text().replace(/\s+/g, " ").trim();
-    return { $, allText };
+    return { $, text };
   }
 }
-module.exports = { HtmlParser };
+export { HtmlParser };

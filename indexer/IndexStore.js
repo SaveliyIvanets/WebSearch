@@ -1,5 +1,5 @@
-const { Tokenizer } = require("./Tokenizer");
-const fs = require("fs");
+import { Tokenizer } from "./Tokenizer.js";
+import fs from "fs";
 class IndexStore {
   constructor() {
     this.invertedIndex = {};
@@ -46,4 +46,4 @@ class IndexStore {
     return this.invertedIndex;
   }
 }
-module.exports = { IndexStore };
+export { IndexStore };

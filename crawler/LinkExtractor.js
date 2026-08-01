@@ -1,10 +1,10 @@
-const { UrlNormalizer } = require("./UrlNormalizer");
+import { UrlNormalizer } from "./UrlNormalizer.js";
 class LinkExtractor {
   static extractInternalLinks($, currentUrl, baseHostname) {
     const internalLinks = new Set();
     $("a").each((i, el) => {
       const href = $(el).attr("href");
-      if (this._shouldSkip(href)) return;
+      if (this._isIgnoredLink(href)) return;
       try {
         const absoluteUrl = new URL(href, currentUrl);
         if (absoluteUrl.hostname !== baseHostname) {
@@ -32,4 +32,4 @@ class LinkExtractor {
     );
   }
 }
-module.exports = { LinkExtractor };
+export { LinkExtractor };

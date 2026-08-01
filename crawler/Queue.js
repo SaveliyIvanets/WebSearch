@@ -37,4 +37,4 @@ class Queue {
     return this._size;
   }
 }
-module.exports = { Queue };
+export { Queue };

@@ -1,4 +1,4 @@
-const axios = require("axios");
+import axios from "axios";
 class PageFetcher {
   constructor(options = {}) {
     this.timeout = options.timeout ?? 10000;
@@ -28,4 +28,4 @@ class PageFetcher {
   }
 }
 
-module.exports = { PageFetcher };
+export { PageFetcher };

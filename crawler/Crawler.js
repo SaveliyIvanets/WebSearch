@@ -1,3 +1,5 @@
+import { Worker } from "./Worker.js";
+import { Queue } from "./Queue.js";
 class Crawler {
   constructor(options = {}) {
     this.workerCount = options.workerCount ?? 10;
@@ -32,8 +34,8 @@ class Crawler {
         pageFetcher: this.pageFetcher,
         htmlParser: this.htmlParser,
         linkExtractor: this.linkExtractor,
-        indexStore: this.indexStore,
         maxPages: this.maxPages,
+        indexStore: this.indexStore,
       });
 
       workers.push(worker.run(i, baseHostname));
@@ -41,3 +43,4 @@ class Crawler {
     await Promise.all(workers);
   }
 }
+export { Crawler };
