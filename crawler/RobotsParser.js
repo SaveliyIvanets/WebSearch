@@ -1,7 +1,7 @@
 class RobotsParser {
   constructor(pageFetcher) {
     this.pageFetcher = pageFetcher;
-  
+
     this.rules = {
       allowedPaths: [],
       disallowedPaths: [],
@@ -28,7 +28,7 @@ class RobotsParser {
 
   canVisit(url) {
     try {
-      const { pathname } = new URL(url);
+        const { pathname } = new URL(url);
         let bestMatch = null;
         let bestType = null; // 'allow' или 'disallow'
 
@@ -67,8 +67,8 @@ class RobotsParser {
                 // Если длины равны, приоритет у Allow
                 else if (currentLength === getEffectiveLength(bestMatch) && rule.type === 'allow') {
                     bestType = 'allow';
-        }
-      }
+                }
+            }
         }
 
         // 4. Возвращаем результат
@@ -76,7 +76,7 @@ class RobotsParser {
         return bestType !== 'disallow';
     } catch {
         // В случае ошибки парсинга URL разрешаем доступ
-      return true;
+        return true;
     }
   }
 
@@ -147,7 +147,7 @@ class RobotsParser {
             default:
                 // Игнорируем другие правила
                 break;
-      }
+        }
     }
   }
 }

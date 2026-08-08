@@ -3,7 +3,6 @@ import { Queue } from "./Queue.js";
 class Crawler {
   constructor(options = {}) {
     this.workerCount = options.workerCount ?? 10;
-    this.delayMs = options.delayMs ?? 1000;
 
     this.queue = new Queue();
     this.visited = new Set();
@@ -28,7 +27,6 @@ class Crawler {
       const worker = new Worker({
         queue: this.queue,
         visited: this.visited,
-        delayMs: this.delayMs,
         state: this.state,
         robotsParser: this.robotsParser,
         pageFetcher: this.pageFetcher,
