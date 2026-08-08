@@ -1,13 +1,21 @@
 class RobotsParser {
   constructor(pageFetcher) {
-    this.disallowedPaths = new Set();
     this.pageFetcher = pageFetcher;
+  
+    this.rules = {
+      allowedPaths: [],
+      disallowedPaths: [],
+      crawlDelay: null,
+      sitemap: null
+    };
   }
+
   async load(origin) {
     const robotsUrl = new URL("/robots.txt", origin);
     const html = await this.pageFetcher.fetchText(robotsUrl.href);
     this._parseRobotsTxt(html);
   }
+
   _addToDisallowedPaths(key, value) {
     if (key === "disallow" && value.length > 0) {
       this.disallowedPaths.add(value);
