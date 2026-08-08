@@ -16,13 +16,13 @@ class Crawler {
     this.indexStore = options.indexStore;
 
     this.maxPages = options.maxPages ?? Infinity;
-    //this.maxDepth = options.maxDepth ?? Infinity; later
+    this.maxDepth = options.maxDepth ?? Infinity;
   }
   async crawl(startUrl) {
     const startUrlObj = new URL(startUrl);
     const baseHostname = startUrlObj.hostname;
     await this.robotsParser.load(startUrl);
-    this.queue.push(startUrl);
+    this.queue.push({ url: startUrl, depth: 0 });
     const workers = [];
     for (let i = 0; i < this.workerCount; i++) {
       const worker = new Worker({
@@ -35,6 +35,7 @@ class Crawler {
         htmlParser: this.htmlParser,
         linkExtractor: this.linkExtractor,
         maxPages: this.maxPages,
+        maxDepth: this.maxDepth,
         indexStore: this.indexStore,
       });
 
