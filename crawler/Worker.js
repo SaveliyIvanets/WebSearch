@@ -9,8 +9,8 @@ class Worker {
     this.htmlParser = options.htmlParser;
     this.linkExtractor = options.linkExtractor;
     this.maxPages = options.maxPages ?? Infinity;
+    this.maxDepth = options.maxDepth ?? Infinity;
     this.indexStore = options.indexStore;
-    //this.maxDepth = options.maxDepth ?? Infinity; later
   }
   async run(id, baseDomain) {
     while (true) {
@@ -24,7 +24,7 @@ class Worker {
         await new Promise((resolve) => setTimeout(resolve, this.delayMs));
         continue;
       }
-      const currentUrl = this.queue.pop();
+      const { url: currentUrl, depth: currentDepth } = this.queue.pop();
       if (this.visited.has(currentUrl)) continue;
       this.visited.add(currentUrl);
       this.state.activeWorkers++;
@@ -41,8 +41,12 @@ class Worker {
         baseDomain,
       );
       for (const link of foundLinks) {
-        if (!this.visited.has(link) && this.robotsParser.canVisit(link)) {
-          this.queue.push(link);
+        if (
+          !this.visited.has(link) &&
+          this.robotsParser.canVisit(link) &&
+          currentDepth + 1 <= this.maxDepth
+        ) {
+          this.queue.push({ url: link, depth: currentDepth + 1 });
         }
       }
       await new Promise((resolve) => setTimeout(resolve, this.delayMs));
