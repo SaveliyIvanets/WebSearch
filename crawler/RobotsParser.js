@@ -21,6 +21,11 @@ class RobotsParser {
       this.disallowedPaths.add(value);
     }
   }
+
+  getCrawlDelay() {
+    return this.rules.crawlDelay !== null ? this.rules.crawlDelay * 1000 : null;
+  }
+
   canVisit(url) {
     try {
       const { pathname } = new URL(url);
