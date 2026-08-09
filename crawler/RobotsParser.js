@@ -59,7 +59,6 @@ class RobotsParser {
                 if (isNewBestMatch) bestMatch = rule;
             }
         }
-        console.log(bestMatch)
         return bestMatch === null || bestMatch.type === "allow";
     } catch {
         return true;
