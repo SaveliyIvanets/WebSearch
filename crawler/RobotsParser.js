@@ -72,7 +72,7 @@ class RobotsParser {
     let rulesForOurAgent = [];
 
     for (const line of lines) {
-      const trimmed = line.trim();
+      let trimmed = line.trim();
 
       const hashIndex = trimmed.indexOf('#');
       if (hashIndex !== -1) {
