@@ -70,11 +70,16 @@ class RobotsParser {
     const lines = html.split("\n");
     let isOurAgent = false;
     let rulesForOurAgent = [];
+
     for (const line of lines) {
       const trimmed = line.trim();
+      
+      const hashIndex = trimmed.indexOf('#');
+      if (hashIndex !== -1) {
+        trimmed = trimmed.substring(0, hashIndex).trim();
+      }
 
-      // скип комментариев и пустых строк
-      if (!trimmed || trimmed.startsWith('#')) continue;
+      if (!trimmed) continue;
 
       const [key, ...val] = trimmed.split(":");
       const keyLower = key.toLowerCase();
