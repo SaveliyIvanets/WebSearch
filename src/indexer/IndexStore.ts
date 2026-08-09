@@ -1,11 +1,12 @@
 import { Tokenizer } from "./Tokenizer.js";
 import fs from "fs";
-class IndexStore {
-  constructor() {
-    this.invertedIndex = {};
-  }
 
-  addDocument(docId, text) {
+type InvertedIndex = Record<string, Set<string>>;
+
+class IndexStore {
+  private invertedIndex: InvertedIndex = {};
+
+  addDocument(docId: string, text: string): void {
     const tokens = Tokenizer.tokenize(text);
 
     for (const token of tokens) {
@@ -16,11 +17,13 @@ class IndexStore {
       this.invertedIndex[token].add(docId);
     }
   }
-  getDocuments(token) {
+
+  getDocuments(token: string): Set<string> | null {
     return this.invertedIndex[token] ?? null;
   }
-  saveIndexToDisk(filePath) {
-    const copyIndex = {};
+
+  saveIndexToDisk(filePath: string): void {
+    const copyIndex: Record<string, string[]> = {};
     for (const [key, value] of Object.entries(this.invertedIndex)) {
       copyIndex[key] = Array.from(value);
     }
@@ -32,10 +35,13 @@ class IndexStore {
     }
   }
 
-  loadIndexFromDisk(filePath) {
+  loadIndexFromDisk(filePath: string): InvertedIndex {
     this.invertedIndex = {};
     try {
-      const rawData = JSON.parse(fs.readFileSync(filePath, "utf8"));
+      const rawData = JSON.parse(fs.readFileSync(filePath, "utf8")) as Record<
+        string,
+        string[]
+      >;
       for (const [key, value] of Object.entries(rawData)) {
         this.invertedIndex[key] = new Set(value);
       }
