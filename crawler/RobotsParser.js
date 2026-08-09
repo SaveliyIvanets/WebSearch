@@ -1,3 +1,21 @@
+class UrlPattern {
+  constructor(pattern, type) {
+    this.pattern = pattern;
+    this.effectiveLength = pattern.replace(/[\*\$]/g, '').length;
+    this.type = type;
+
+    let clearPattern = pattern
+    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    .replace(/\\\*/g, '.*')  // * → .*
+    .replace(/\\\$/g, '$');  // $ → конец строки
+    this.regex = new RegExp(`^${clearPattern}`);
+  }
+
+  isPatternMatch(path) {
+    return this.regex.test(path);
+  }
+}
+
 class RobotsParser {
   constructor(pageFetcher) {
     this.pageFetcher = pageFetcher;
@@ -16,12 +34,6 @@ class RobotsParser {
     this._parseRobotsTxt(html);
   }
 
-  _addToDisallowedPaths(key, value) {
-    if (key === "disallow" && value.length > 0) {
-      this.disallowedPaths.add(value);
-    }
-  }
-
   getCrawlDelay() {
     return this.rules.crawlDelay !== null ? this.rules.crawlDelay * 1000 : null;
   }
@@ -30,47 +42,25 @@ class RobotsParser {
     try {
         const urlObj = new URL(url);
         const pathWithQuery = urlObj.pathname + urlObj.search;
-
         let bestMatch = null;
-        let bestType = null; // 'allow' или 'disallow'
-
-        const isPatternMatch = (pattern, path) => {
-            const escapedPattern = pattern
-                .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-                .replace(/\\\*/g, '.*')  // * → .*
-                .replace(/\\\$/g, '$');  // $ → конец строки
-            const regex = new RegExp(`^${escapedPattern}`);
-            return regex.test(path);
-        };
-
-        // Функция для вычисления "эффективной длины" паттерна (игнорируем * и $)
-        const getEffectiveLength = (pattern) => {
-            // Убираем * и $ из подсчёта, т.к. они не делают паттерн более конкретным
-            return pattern.replace(/[\*\$]/g, '').length;
-        };
 
         const allRules = [
-            ...this.rules.allowedPaths.map(p => ({ path: p, type: 'allow' })),
-            ...this.rules.disallowedPaths.map(p => ({ path: p, type: 'disallow' }))
+            ...this.rules.allowedPaths,
+            ...this.rules.disallowedPaths
         ];
 
         for (const rule of allRules) {
-            if (isPatternMatch(rule.path, pathWithQuery)) {
-                const currentLength = getEffectiveLength(rule.path);
-                if (bestMatch === null || currentLength > getEffectiveLength(bestMatch)) {
-                    bestMatch = rule.path;
-                    bestType = rule.type;
-                } else if (currentLength === getEffectiveLength(bestMatch) && rule.type === 'allow') {
-                    // При равной длине приоритет у Allow
-                    bestType = 'allow';
+            if (rule.isPatternMatch(pathWithQuery)) {
+                if (bestMatch === null || rule.effectiveLength > bestMatch.effectiveLength) {
+                    bestMatch = rule;
+                } else if (rule.effectiveLength === bestMatch.effectiveLength && rule.type === 'allow') {
+                    bestMatch = rule;
                 }
             }
         }
 
-        // Если нет совпадений или лучшее совпадение — Allow, возвращаем true
-        return bestType !== 'disallow';
+        return bestMatch === null || bestMatch.type === "allow";
     } catch {
-        // При ошибке парсинга URL — разрешаем
         return true;
     }
 }
@@ -119,12 +109,12 @@ class RobotsParser {
         switch (rule.key) {
             case 'allow':
                 if (rule.value) {
-                    this.rules.allowedPaths.push(rule.value);
+                    this.rules.allowedPaths.push(new UrlPattern(rule.value, "allow"));
                 }
                 break;
             case 'disallow':
                 if (rule.value) {
-                    this.rules.disallowedPaths.push(rule.value);
+                    this.rules.disallowedPaths.push(new UrlPattern(rule.value, "disallow"));
                 }
                 break;
             case 'crawl-delay':
