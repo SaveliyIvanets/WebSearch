@@ -2,7 +2,6 @@ class Worker {
   constructor(options = {}) {
     this.queue = options.queue;
     this.visited = options.visited;
-    this.delayMs = options.delayMs ?? 1000;
     this.state = options.state;
     this.robotsParser = options.robotsParser;
     this.pageFetcher = options.pageFetcher;
@@ -21,7 +20,7 @@ class Worker {
         if (this.state.activeWorkers === 0) {
           break;
         }
-        await new Promise((resolve) => setTimeout(resolve, this.delayMs));
+        await new Promise((resolve) => setTimeout(resolve, this.robotsParser.getCrawlDelay() ?? 1000));
         continue;
       }
       const { url: currentUrl, depth: currentDepth } = this.queue.pop();
