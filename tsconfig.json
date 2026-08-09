@@ -4,6 +4,7 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "declaration": true,
+    "allowJs": true,
     "strict": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
