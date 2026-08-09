@@ -51,14 +51,15 @@ class RobotsParser {
 
         for (const rule of allRules) {
             if (rule.isPatternMatch(pathWithQuery)) {
-                if (bestMatch === null || rule.effectiveLength > bestMatch.effectiveLength) {
-                    bestMatch = rule;
-                } else if (rule.effectiveLength === bestMatch.effectiveLength && rule.type === 'allow') {
-                    bestMatch = rule;
-                }
+
+                let isNewBestMatch = bestMatch === null;
+                isNewBestMatch = isNewBestMatch || (rule.effectiveLength > bestMatch.effectiveLength);
+                isNewBestMatch = isNewBestMatch || (rule.effectiveLength === bestMatch.effectiveLength && rule.type === 'allow');
+
+                if (isNewBestMatch) bestMatch = rule;
             }
         }
-
+        console.log(bestMatch)
         return bestMatch === null || bestMatch.type === "allow";
     } catch {
         return true;
@@ -73,7 +74,7 @@ class RobotsParser {
 
     for (const line of lines) {
       const trimmed = line.trim();
-      
+
       const hashIndex = trimmed.indexOf('#');
       if (hashIndex !== -1) {
         trimmed = trimmed.substring(0, hashIndex).trim();
