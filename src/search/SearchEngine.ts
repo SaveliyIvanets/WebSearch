@@ -1,9 +1,14 @@
 import { Tokenizer } from "../indexer/Tokenizer.js";
+import { IndexStore } from "../indexer/types/IndexStore.js";
+
 class SearchEngine {
-  constructor(indexStore) {
+  private indexStore: IndexStore;
+
+  constructor(indexStore: IndexStore) {
     this.indexStore = indexStore;
   }
-  search(query) {
+
+  search(query: string): string[] {
     if (typeof query !== "string" || query.trim() === "") {
       return [];
     }
@@ -14,8 +19,8 @@ class SearchEngine {
     return this._intersectSets(sets);
   }
 
-  _getPostingLists(tokens) {
-    const sets = [];
+  private _getPostingLists(tokens: string[]): Set<string>[] {
+    const sets: Set<string>[] = [];
     for (const token of tokens) {
       const docSet = this.indexStore.getDocuments(token);
       if (!docSet) return [];
@@ -24,10 +29,10 @@ class SearchEngine {
     return sets;
   }
 
-  _intersectSets(sets) {
+  private _intersectSets(sets: Set<string>[]): string[] {
     if (!sets || sets.length === 0) return [];
     if (sets.length === 1) return Array.from(sets[0]);
-    const intersectArray = [];
+    const intersectArray: string[] = [];
     const mainSet = sets[0];
     for (const elem of mainSet) {
       let notFound = false;
@@ -44,7 +49,7 @@ class SearchEngine {
     return intersectArray;
   }
 
-  _sortBySize(sets) {
+  private _sortBySize(sets: Set<string>[]): Set<string>[] {
     return sets.sort((a, b) => a.size - b.size);
   }
 }
