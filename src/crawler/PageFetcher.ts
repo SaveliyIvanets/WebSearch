@@ -1,9 +1,15 @@
+interface Option {
+  timeout?: number;
+  userAgent?: string;
+}
 class PageFetcher {
-  constructor(options = {}) {
+  private readonly timeout: number;
+  private readonly userAgent: string;
+  constructor(options: Option = {}) {
     this.timeout = options.timeout ?? 10000;
     this.userAgent = options.userAgent ?? "SearchBot/1.0";
   }
-  async fetchText(url) {
+  async fetchText(url: string): Promise<string | null> {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.timeout);
     try {
