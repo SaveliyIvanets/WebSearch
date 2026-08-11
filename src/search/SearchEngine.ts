@@ -1,8 +1,5 @@
 import { Tokenizer } from "../indexer/Tokenizer.js";
-
-interface IndexStore {
-  getDocuments(token: string): Set<string> | null;
-}
+import { IndexStore } from "../indexer/types/IndexStore.js";
 
 class SearchEngine {
   private indexStore: IndexStore;

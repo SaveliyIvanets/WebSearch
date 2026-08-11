@@ -1,6 +1,5 @@
-import { URL } from "url";
 class UrlNormalizer {
-  static normalize(rawUrl) {
+  static normalize(rawUrl: string): string | null {
     try {
       const normalized = new URL(rawUrl);
       normalized.hash = "";
