@@ -14,7 +14,7 @@ class Tokenizer {
     "with",
     "by",
   ]);
-  static tokenize(text) {
+  static tokenize(text: string): string[] {
     if (typeof text !== "string" || text.length === 0) return [];
     const tokens = text
       .toLowerCase()
