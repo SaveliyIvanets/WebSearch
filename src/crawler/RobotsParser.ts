@@ -1,23 +1,47 @@
+import { PageFetcher } from "./PageFetcher.js";
+
+type PatternType = "allow" | "disallow";
+
+interface RobotsRule {
+    key: string;
+    value: string;
+}
+
+interface RobotsRules {
+    allowedPaths: UrlPattern[];
+    disallowedPaths: UrlPattern[];
+    crawlDelay: number | null;
+    sitemap: string | null;
+}
+
 class UrlPattern {
-  constructor(pattern, type) {
-    this.pattern = pattern;
-    this.effectiveLength = pattern.replace(/[\*\$]/g, '').length;
-    this.type = type;
+    readonly pattern: string;
+    readonly effectiveLength: number;
+    readonly type: PatternType;
+    private readonly regex: RegExp;
 
-    let clearPattern = pattern
-    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    .replace(/\\\*/g, '.*')  // * → .*
-    .replace(/\\\$/g, '$');  // $ → конец строки
-    this.regex = new RegExp(`^${clearPattern}`);
-  }
+    constructor(pattern: string, type: PatternType) {
+        this.pattern = pattern;
+        this.effectiveLength = pattern.replace(/[\*\$]/g, '').length;
+        this.type = type
 
-  isPatternMatch(path) {
+        const clearPattern = pattern
+        .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+        .replace(/\\\*/g, '.*')  // * → .*
+        .replace(/\\\$/g, '$');  // $ → конец строки
+        this.regex = new RegExp(`^${clearPattern}`);
+    }
+
+    isPatternMatch(path: string) : boolean {
     return this.regex.test(path);
-  }
+    }
 }
 
 class RobotsParser {
-  constructor(pageFetcher) {
+    private readonly pageFetcher: PageFetcher;
+    private rules: RobotsRules;
+
+    constructor(pageFetcher: PageFetcher) {
     this.pageFetcher = pageFetcher;
 
     this.rules = {
@@ -28,48 +52,48 @@ class RobotsParser {
     };
   }
 
-  async load(origin) {
+  async load(origin: string): Promise<void> {
     const robotsUrl = new URL("/robots.txt", origin);
     const html = await this.pageFetcher.fetchText(robotsUrl.href);
     this._parseRobotsTxt(html);
   }
 
-  getCrawlDelay() {
+  getCrawlDelay() : number | null {
     return this.rules.crawlDelay !== null ? this.rules.crawlDelay * 1000 : null;
   }
 
-  canVisit(url) {
-    try {
-        const urlObj = new URL(url);
-        const pathWithQuery = urlObj.pathname + urlObj.search;
-        let bestMatch = null;
+  canVisit(url: string) : boolean{
+        try {
+            const urlObj = new URL(url);
+            const pathWithQuery = urlObj.pathname + urlObj.search;
+            let bestMatch: UrlPattern | null = null;
 
-        const allRules = [
-            ...this.rules.allowedPaths,
-            ...this.rules.disallowedPaths
-        ];
+            const allRules = [
+                ...this.rules.allowedPaths,
+                ...this.rules.disallowedPaths
+            ];
 
-        for (const rule of allRules) {
-            if (rule.isPatternMatch(pathWithQuery)) {
+            for (const rule of allRules) {
+                if (rule.isPatternMatch(pathWithQuery)) {
+                    let isNewBestMatch =
+                        bestMatch === null ||
+                        rule.effectiveLength > bestMatch.effectiveLength ||
+                        (rule.effectiveLength === bestMatch.effectiveLength && rule.type === 'allow');
 
-                let isNewBestMatch = bestMatch === null;
-                isNewBestMatch = isNewBestMatch || (rule.effectiveLength > bestMatch.effectiveLength);
-                isNewBestMatch = isNewBestMatch || (rule.effectiveLength === bestMatch.effectiveLength && rule.type === 'allow');
-
-                if (isNewBestMatch) bestMatch = rule;
+                    if (isNewBestMatch) bestMatch = rule;
+                }
             }
+            return bestMatch === null || bestMatch.type === "allow";
+        } catch {
+            return true;
         }
-        return bestMatch === null || bestMatch.type === "allow";
-    } catch {
-        return true;
     }
-}
 
-  _parseRobotsTxt(html) {
+  _parseRobotsTxt(html: string | null) : void {
     if (!html) return;
     const lines = html.split("\n");
     let isOurAgent = false;
-    let rulesForOurAgent = [];
+    let rulesForOurAgent: RobotsRule[] = [];
 
     for (const line of lines) {
       let trimmed = line.trim();
@@ -92,7 +116,7 @@ class RobotsParser {
         }
         //нашли ли нашу секцию
         const agent = value.toLowerCase();
-        const myAgent = this.pageFetcher.userAgent?.toLowerCase() || '';
+        const myAgent = this.pageFetcher.userAgent.toLowerCase();
         isOurAgent = (agent === myAgent || agent === '*');
         rulesForOurAgent = [];
         continue;
@@ -109,7 +133,7 @@ class RobotsParser {
     }
   }
 
-  _applyRules(rules) {
+  _applyRules(rules: RobotsRule[]) : void{
     for (const rule of rules) {
         switch (rule.key) {
             case 'allow':
@@ -140,4 +164,3 @@ class RobotsParser {
     }
   }
 }
-export { RobotsParser };
