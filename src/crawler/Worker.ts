@@ -1,5 +1,25 @@
+import { Queue } from "./types/Queue.js";
+import { CrawlTask } from "./types/CrawlTask.js";
+import { State } from "./types/State.js";
+interface Option {
+  queue: Queue<CrawlTask>;
+  visited: Set<string>;
+  state: State;
+  
+}
 class Worker {
-  constructor(options = {}) {
+  private readonly queue;
+  private readonly visited;
+  private readonly state;
+  private readonly robotsParser;
+  private readonly pageFetcher;
+  private readonly htmlParser;
+  private readonly linkExtractor;
+  private readonly maxPages;
+  private readonly maxDepth;
+  private readonly indexStore;
+
+  constructor(options: Option) {
     this.queue = options.queue;
     this.visited = options.visited;
     this.state = options.state;
@@ -20,7 +40,9 @@ class Worker {
         if (this.state.activeWorkers === 0) {
           break;
         }
-        await new Promise((resolve) => setTimeout(resolve, this.robotsParser.getCrawlDelay() ?? 1000));
+        await new Promise((resolve) =>
+          setTimeout(resolve, this.robotsParser.getCrawlDelay() ?? 1000),
+        );
         continue;
       }
       const { url: currentUrl, depth: currentDepth } = this.queue.pop();
