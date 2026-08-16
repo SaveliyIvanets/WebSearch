@@ -70,7 +70,7 @@ class Worker {
           this.queue.push({ url: link, depth: currentDepth + 1 });
         }
       }
-      await new Promise((resolve) => setTimeout(resolve, this.delayMs));
+      await new Promise((resolve) => setTimeout(resolve,  this.robotsParser.getCrawlDelay() ?? 1000));
     }
   }
 }
