@@ -57,7 +57,11 @@ class Worker {
         );
         continue;
       }
-      const { url: currentUrl, depth: currentDepth } = this.queue.pop();
+
+      const task = this.queue.pop();
+      if (task === null) continue;
+
+      const { url: currentUrl, depth: currentDepth } = task;
       if (this.visited.has(currentUrl)) continue;
       this.visited.add(currentUrl);
       this.state.activeWorkers++;
