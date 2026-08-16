@@ -1,7 +1,14 @@
+import { Queue } from "./Queue.js"
 import { Worker } from "./Worker.js";
-import { Queue } from "./types/Queue.js";
 import { CrawlTask } from "./types/CrawlTask.js";
 import { State } from "./types/State.js";
+import { HtmlParser } from "./HtmlParser.js";
+import { LinkExtractor } from "./LinkExtractor.js";
+
+import { IndexStore as IndexStoreType } from "../indexer/types/IndexStore.js";
+import { RobotsParser as RobotsParserType } from "./types/RobotsParser.js";
+import { PageFetcher as PageFetcherType } from "./types/PageFetcher.js";
+
 
 interface Options {
   workerCount?: number;
@@ -23,11 +30,11 @@ class Crawler {
   private readonly visited: Set<string>;
   private readonly state: State;
 
-  private readonly pageFetcher: any;
-  private readonly htmlParser: any;
-  private readonly linkExtractor: any;
-  private readonly robotsParser: any;
-  private readonly indexStore: any;
+  private readonly pageFetcher: PageFetcherType;
+  private readonly htmlParser: typeof HtmlParser;
+  private readonly linkExtractor: typeof LinkExtractor;
+  private readonly robotsParser: RobotsParserType;
+  private readonly indexStore: IndexStoreType;
 
   private readonly maxPages: number;
   private readonly maxDepth: number;
