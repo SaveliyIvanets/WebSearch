@@ -1,20 +1,32 @@
-import { Queue } from "./types/Queue.js";
-import { CrawlTask } from "./types/CrawlTask.js";
-import { State } from "./types/State.js";
+import { Queue } from "./types/Queue.ts";
+import { CrawlTask } from "./types/CrawlTask.ts";
+import { State } from "./types/State.ts";
+import { PageFetcher as PageFetcherType } from "./types/pageFetcher.s";
+import { HtmlParser } from "./HtmlParser.ts";
+import { LinkExtractor } from "./LinkExtractor.ts";
+import { IndexStore as IndexStoreType } from "../indexer/types/IndexStore.js";
+import { RobotsParser as RobotsParserType } from "./types/RobotsParser.js";
+
 interface Option {
   queue: Queue<CrawlTask>;
   visited: Set<string>;
   state: State;
-  
+  pageFetcher: PageFetcherType;
+  htmlParser: typeof HtmlParser; 
+  linkExtractor: typeof LinkExtractor; 
+  robotsParser: RobotsParserType; 
+  maxPages?: number;
+  maxDepth?: number;
+  IndexStore: IndexStoreType;
 }
 class Worker {
   private readonly queue;
   private readonly visited;
   private readonly state;
   private readonly robotsParser;
-  private readonly pageFetcher;
-  private readonly htmlParser;
-  private readonly linkExtractor;
+  private readonly pageFetcher: PageFetcherType;
+  private readonly htmlParser: typeof HtmlParser; 
+  private readonly linkExtractor: typeof LinkExtractor;
   private readonly maxPages;
   private readonly maxDepth;
   private readonly indexStore;
