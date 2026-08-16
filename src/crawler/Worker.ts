@@ -43,7 +43,7 @@ class Worker {
     this.maxDepth = options.maxDepth ?? Infinity;
     this.indexStore = options.indexStore;
   }
-  async run(id: number, baseDomain: string) {
+  async run(baseDomain: string) {
     while (true) {
       if (this.visited.size >= this.maxPages) {
         break;
