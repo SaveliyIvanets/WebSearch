@@ -11,13 +11,13 @@ import { PageFetcher as PageFetcherType } from "./types/PageFetcher.js";
 
 interface Options {
   workerCount?: number;
-
-  pageFetcher: any;
-  htmlParser: any;
-  linkExtractor: any;
-  robotsParser: any;
-  indexStore: any;
-
+  
+  pageFetcher: PageFetcherType;
+  htmlParser: typeof HtmlParser;
+  linkExtractor: typeof LinkExtractor;
+  robotsParser: RobotsParserType;
+  indexStore: IndexStoreType;
+  
   maxPages?: number;
   maxDepth?: number;
 }
