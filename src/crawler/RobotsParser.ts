@@ -164,3 +164,5 @@ class RobotsParser {
     }
   }
 }
+
+export { RobotsParser };
