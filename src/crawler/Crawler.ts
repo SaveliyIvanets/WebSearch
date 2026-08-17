@@ -1,4 +1,4 @@
-import { Queue } from "./Queue.js"
+import { Queue } from "./Queue.js";
 import { Worker } from "./Worker.js";
 import { CrawlTask } from "./types/CrawlTask.js";
 import { State } from "./types/State.js";
@@ -8,7 +8,6 @@ import { LinkExtractor } from "./LinkExtractor.js";
 import { IndexStore as IndexStoreType } from "../indexer/types/IndexStore.js";
 import { RobotsParser as RobotsParserType } from "./types/RobotsParser.js";
 import { PageFetcher as PageFetcherType } from "./types/PageFetcher.js";
-
 
 interface Options {
   workerCount?: number;
@@ -85,7 +84,7 @@ class Crawler {
         indexStore: this.indexStore,
       });
 
-      workers.push(worker.run(i, baseDomain));
+      workers.push(worker.run(baseDomain));
     }
 
     await Promise.all(workers);
