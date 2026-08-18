@@ -6,14 +6,16 @@ import { HtmlParser } from "./HtmlParser.js";
 import { LinkExtractor } from "./LinkExtractor.js";
 import { IndexStore as IIndexStore } from "../indexer/types/IndexStore.js";
 import { RobotsParser as IRobotsParser } from "./types/RobotsParser.js";
+import { IHtmlParser } from "./types/IHtmlParser.js";
+import { ILinkExtractor } from "./types/ILinkExtractor.js";
 
 interface Option {
   queue: Queue<CrawlTask>;
   visited: Set<string>;
   state: State;
   pageFetcher: IPageFetcher;
-  htmlParser: typeof HtmlParser; 
-  linkExtractor: typeof LinkExtractor; 
+  htmlParser: IHtmlParser; 
+  linkExtractor: ILinkExtractor; 
   robotsParser: IRobotsParser; 
   maxPages?: number;
   maxDepth?: number;
@@ -25,8 +27,8 @@ class Worker {
   private readonly state;
   private readonly robotsParser;
   private readonly pageFetcher: IPageFetcher;
-  private readonly htmlParser: typeof HtmlParser; 
-  private readonly linkExtractor: typeof LinkExtractor;
+  private readonly htmlParser: IHtmlParser; 
+  private readonly linkExtractor: ILinkExtractor;
   private readonly maxPages;
   private readonly maxDepth;
   private readonly indexStore;

@@ -1,11 +1,12 @@
 import * as cheerio from "cheerio";
 import { CheerioAPI } from "cheerio";
+import { IHtmlParser } from "./types/IHtmlParser.js"
 
-class HtmlParser {
+class HtmlParser implements IHtmlParser {
   private static readonly REMOVED_TAGS =
     "script, style, noscript, template, svg, nav, footer, header, aside, form";
 
-  static parse(html: string): { $: CheerioAPI; text: string } {
+  parse(html: string): { $: CheerioAPI; text: string } {
     const $ = cheerio.load(html);
     $(HtmlParser.REMOVED_TAGS).remove();
     const text = $("body").text().replace(/\s+/g, " ").trim();

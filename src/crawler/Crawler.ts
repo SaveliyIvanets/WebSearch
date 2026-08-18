@@ -8,13 +8,15 @@ import { LinkExtractor } from "./LinkExtractor.js";
 import { IndexStore as IIndexStore } from "../indexer/types/IndexStore.js";
 import { RobotsParser as IRobotsParser } from "./types/RobotsParser.js";
 import { PageFetcher as IPageFetcher } from "./types/PageFetcher.js";
+import { IHtmlParser } from "./types/IHtmlParser.js";
+import { ILinkExtractor } from "./types/ILinkExtractor.js";
 
 interface Options {
   workerCount?: number;
   
   pageFetcher: IPageFetcher;
-  htmlParser: typeof HtmlParser;
-  linkExtractor: typeof LinkExtractor;
+  htmlParser: IHtmlParser;
+  linkExtractor: ILinkExtractor;
   robotsParser: IRobotsParser;
   indexStore: IIndexStore;
   
@@ -30,8 +32,8 @@ class Crawler {
   private readonly state: State;
 
   private readonly pageFetcher: IPageFetcher;
-  private readonly htmlParser: typeof HtmlParser;
-  private readonly linkExtractor: typeof LinkExtractor;
+  private readonly htmlParser: IHtmlParser;
+  private readonly linkExtractor: ILinkExtractor;
   private readonly robotsParser: IRobotsParser;
   private readonly indexStore: IIndexStore;
 
