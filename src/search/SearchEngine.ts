@@ -1,5 +1,5 @@
 import { Tokenizer } from "../indexer/Tokenizer.js";
-import { IndexStore } from "../indexer/types/IndexStore.js";
+import { IndexStore } from "../indexer/types/IIndexStore.js";
 
 class SearchEngine {
   private indexStore: IndexStore;

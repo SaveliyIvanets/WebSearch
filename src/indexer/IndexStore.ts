@@ -1,5 +1,5 @@
 import { Tokenizer } from "./Tokenizer.js";
-import { IndexStore as IIndexStore } from "./types/IndexStore.js"
+import { IndexStore as IIndexStore } from "./types/IIndexStore.js"
 import fs from "fs";
 
 type InvertedIndex = Record<string, Set<string>>;

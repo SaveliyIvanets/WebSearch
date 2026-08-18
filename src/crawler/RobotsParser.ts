@@ -1,5 +1,5 @@
 import { PageFetcher } from "./PageFetcher.js";
-import { RobotsParser as IRobotsParser } from "./types/RobotsParser.js";
+import { RobotsParser as IRobotsParser } from "./types/IRobotsParser.js";
 
 type PatternType = "allow" | "disallow";
 

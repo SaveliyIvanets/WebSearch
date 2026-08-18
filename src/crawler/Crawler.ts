@@ -2,12 +2,9 @@ import { Queue } from "./Queue.js";
 import { Worker } from "./Worker.js";
 import { CrawlTask } from "./types/CrawlTask.js";
 import { State } from "./types/State.js";
-import { HtmlParser } from "./HtmlParser.js";
-import { LinkExtractor } from "./LinkExtractor.js";
-
-import { IndexStore as IIndexStore } from "../indexer/types/IndexStore.js";
-import { RobotsParser as IRobotsParser } from "./types/RobotsParser.js";
-import { PageFetcher as IPageFetcher } from "./types/PageFetcher.js";
+import { IIndexStore } from "../indexer/types/IIndexStore.js";
+import { IRobotsParser } from "./types/IRobotsParser.js";
+import { IPageFetcher } from "./types/IPageFetcher.js";
 import { IHtmlParser } from "./types/IHtmlParser.js";
 import { ILinkExtractor } from "./types/ILinkExtractor.js";
 

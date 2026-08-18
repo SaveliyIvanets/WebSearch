@@ -1,5 +1,5 @@
-interface PageFetcher {
+interface IPageFetcher {
     fetchText(url: string): Promise<string | null>;
 }
   
-export { PageFetcher };
+export { IPageFetcher };
