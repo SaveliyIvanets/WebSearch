@@ -1,8 +1,10 @@
+import { PageFetcher as IPageFetcher } from "./types/PageFetcher.js";
+
 interface Option {
   timeout?: number;
   userAgent?: string;
 }
-class PageFetcher {
+class PageFetcher implements IPageFetcher{
   private readonly timeout: number;
   public readonly userAgent: string;
   constructor(options: Option = {}) {

@@ -5,18 +5,18 @@ import { State } from "./types/State.js";
 import { HtmlParser } from "./HtmlParser.js";
 import { LinkExtractor } from "./LinkExtractor.js";
 
-import { IndexStore as IndexStoreType } from "../indexer/types/IndexStore.js";
-import { RobotsParser as RobotsParserType } from "./types/RobotsParser.js";
-import { PageFetcher as PageFetcherType } from "./types/PageFetcher.js";
+import { IndexStore as IIndexStore } from "../indexer/types/IndexStore.js";
+import { RobotsParser as IRobotsParser } from "./types/RobotsParser.js";
+import { PageFetcher as IPageFetcher } from "./types/PageFetcher.js";
 
 interface Options {
   workerCount?: number;
   
-  pageFetcher: PageFetcherType;
+  pageFetcher: IPageFetcher;
   htmlParser: typeof HtmlParser;
   linkExtractor: typeof LinkExtractor;
-  robotsParser: RobotsParserType;
-  indexStore: IndexStoreType;
+  robotsParser: IRobotsParser;
+  indexStore: IIndexStore;
   
   maxPages?: number;
   maxDepth?: number;
@@ -29,11 +29,11 @@ class Crawler {
   private readonly visited: Set<string>;
   private readonly state: State;
 
-  private readonly pageFetcher: PageFetcherType;
+  private readonly pageFetcher: IPageFetcher;
   private readonly htmlParser: typeof HtmlParser;
   private readonly linkExtractor: typeof LinkExtractor;
-  private readonly robotsParser: RobotsParserType;
-  private readonly indexStore: IndexStoreType;
+  private readonly robotsParser: IRobotsParser;
+  private readonly indexStore: IIndexStore;
 
   private readonly maxPages: number;
   private readonly maxDepth: number;
