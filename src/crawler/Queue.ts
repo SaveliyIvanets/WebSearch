@@ -1,3 +1,7 @@
+import { Logger } from "../logger/Logger.js";
+
+const logger = new Logger({ prefix: "Queue" });
+
 interface Node<T> {
   elem: T;
   next: Node<T> | null;
@@ -19,6 +23,7 @@ class Queue<T> {
       this._tail = node;
     }
     this._size++;
+    logger.debug("Task enqueued", { size: this._size });
   }
   pop(): T | null {
     if (this._size === 0) {
@@ -30,6 +35,7 @@ class Queue<T> {
     if (this._size === 0) {
       this._tail = null;
     }
+    logger.debug("Task dequeued", { size: this._size });
     return popped.elem;
   }
   isEmpty(): boolean {

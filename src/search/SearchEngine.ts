@@ -1,5 +1,8 @@
 import { Tokenizer } from "../indexer/Tokenizer.js";
 import { IIndexStore } from "../indexer/types/IIndexStore.js";
+import { Logger } from "../logger/Logger.js";
+
+const logger = new Logger({prefix: "SearchEngine"});
 
 class SearchEngine {
   private indexStore: IIndexStore;
@@ -9,21 +12,39 @@ class SearchEngine {
   }
 
   search(query: string): string[] {
+    logger.info("Search started", { query });
+    logger.debug("Searching for query", { query }); 
+
     if (typeof query !== "string" || query.trim() === "") {
+      logger.debug("Empty or invalid query provided", { query });
       return [];
     }
+
     const tokens = Tokenizer.tokenize(query);
-    if (tokens.length === 0) return [];
+    if (tokens.length === 0) {
+      logger.debug("No valid tokens found in query", { query });
+      return [];
+    }
     const sets = this._sortBySize(this._getPostingLists(tokens));
-    if (sets.length === 0) return [];
-    return this._intersectSets(sets);
+    if (sets.length === 0) {
+      logger.debug("No results found for query", { query });
+      return [];
+    }
+
+    const result = this._intersectSets(sets);
+    logger.info("Search completed", { query, resultCount: result.length });
+    logger.debug("Search completed", { query, result });
+    return result;
   }
 
   private _getPostingLists(tokens: string[]): Set<string>[] {
     const sets: Set<string>[] = [];
     for (const token of tokens) {
       const docSet = this.indexStore.getDocuments(token);
-      if (!docSet) return [];
+      if (!docSet) {
+        logger.debug("No documents found for token", { token });
+        return [];
+      }
       sets.push(docSet);
     }
     return sets;

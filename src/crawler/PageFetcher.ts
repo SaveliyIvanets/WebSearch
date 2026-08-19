@@ -1,4 +1,7 @@
 import { IPageFetcher } from "./types/IPageFetcher.js";
+import { Logger } from "../logger/Logger.js";
+
+const logger = new Logger({ prefix: "PageFetcher" });
 
 interface Option {
   timeout?: number;
@@ -14,6 +17,7 @@ class PageFetcher implements IPageFetcher{
   async fetchText(url: string): Promise<string | null> {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.timeout);
+    logger.debug("Fetching page", { url, timeout: this.timeout });
     try {
       const response = await fetch(url, {
         signal: controller.signal,
@@ -23,6 +27,7 @@ class PageFetcher implements IPageFetcher{
         },
       });
       if (!response.ok) {
+        logger.warn("HTTP error", { url, status: response.status });
         return null;
       }
       const contentType =
@@ -33,8 +38,10 @@ class PageFetcher implements IPageFetcher{
       ) {
         return await response.text();
       }
+      logger.warn("Unsupported content type", { url, contentType });
       return null;
     } catch (err) {
+      logger.error("Fetch failed", { url, error: err });
       return null;
     } finally {
       clearTimeout(timeout);

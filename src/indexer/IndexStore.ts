@@ -1,10 +1,13 @@
 import { Tokenizer } from "./Tokenizer.js";
 import { IIndexStore } from "./types/IIndexStore.js"
+import { Logger } from "../logger/Logger.js";
 import fs from "fs";
+
+const logger = new Logger({ prefix: "IndexStore" });
 
 type InvertedIndex = Record<string, Set<string>>;
 
-class IndexStore implements IIndexStore{
+class IndexStore implements IIndexStore {
   private invertedIndex: InvertedIndex = {};
 
   addDocument(docId: string, text: string): void {
@@ -17,6 +20,8 @@ class IndexStore implements IIndexStore{
 
       this.invertedIndex[token].add(docId);
     }
+
+    logger.debug("Document added", { docId, tokenCount: tokens.length });
   }
 
   getDocuments(token: string): Set<string> | null {
@@ -31,7 +36,7 @@ class IndexStore implements IIndexStore{
     try {
       fs.writeFileSync(filePath, JSON.stringify(copyIndex));
     } catch (error) {
-      console.error("Failed to save index to disk:", error);
+      logger.error("Failed to save index to disk", { error });
       throw error;
     }
   }
@@ -47,7 +52,7 @@ class IndexStore implements IIndexStore{
         this.invertedIndex[key] = new Set(value);
       }
     } catch (error) {
-      console.error("Failed to load index:", error);
+      logger.error("Failed to load index", { error });
       throw error;
     }
     return this.invertedIndex;

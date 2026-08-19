@@ -1,6 +1,9 @@
 import { UrlNormalizer } from "./UrlNormalizer.js";
 import { ILinkExtractor } from "./types/ILinkExtractor.js";
 import { CheerioAPI } from "cheerio";
+import { Logger } from "../logger/Logger.js";
+
+const logger = new Logger({ prefix: "LinkExtractor" });
 
 class LinkExtractor implements ILinkExtractor {
   extractInternalLinks(
@@ -22,8 +25,12 @@ class LinkExtractor implements ILinkExtractor {
           internalLinks.add(normalized);
         }
       } catch (err) {
-        // ignore invalid URLs
+        logger.debug("Invalid link skipped", { href, currentUrl });
       }
+    });
+    logger.debug("Internal links extracted", {
+      currentUrl,
+      count: internalLinks.size,
     });
     return internalLinks;
   }
