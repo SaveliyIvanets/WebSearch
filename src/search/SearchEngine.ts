@@ -12,6 +12,7 @@ class SearchEngine {
   }
 
   search(query: string): string[] {
+    logger.info("Search started", { query });
     logger.debug("Searching for query", { query }); 
 
     if (typeof query !== "string" || query.trim() === "") {
@@ -31,6 +32,7 @@ class SearchEngine {
     }
 
     const result = this._intersectSets(sets);
+    logger.info("Search completed", { query, resultCount: result.length });
     logger.debug("Search completed", { query, result });
     return result;
   }

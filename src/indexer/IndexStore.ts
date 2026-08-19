@@ -20,6 +20,8 @@ class IndexStore implements IIndexStore {
 
       this.invertedIndex[token].add(docId);
     }
+
+    logger.debug("Document added", { docId, tokenCount: tokens.length });
   }
 
   getDocuments(token: string): Set<string> | null {
