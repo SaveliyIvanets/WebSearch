@@ -1,9 +1,10 @@
 import { Tokenizer } from "./Tokenizer.js";
+import { IIndexStore } from "./types/IIndexStore.js"
 import fs from "fs";
 
 type InvertedIndex = Record<string, Set<string>>;
 
-class IndexStore {
+class IndexStore implements IIndexStore{
   private invertedIndex: InvertedIndex = {};
 
   addDocument(docId: string, text: string): void {

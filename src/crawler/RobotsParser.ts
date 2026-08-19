@@ -1,4 +1,5 @@
 import { PageFetcher } from "./PageFetcher.js";
+import { IRobotsParser } from "./types/IRobotsParser.js";
 
 type PatternType = "allow" | "disallow";
 
@@ -37,7 +38,7 @@ class UrlPattern {
     }
 }
 
-class RobotsParser {
+class RobotsParser implements IRobotsParser {
     private readonly pageFetcher: PageFetcher;
     private rules: RobotsRules;
 
@@ -164,3 +165,5 @@ class RobotsParser {
     }
   }
 }
+
+export { RobotsParser };

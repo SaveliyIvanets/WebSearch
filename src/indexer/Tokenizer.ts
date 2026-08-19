@@ -1,5 +1,5 @@
 class Tokenizer {
-  static STOP_WORDS = new Set([
+  private static STOP_WORDS = new Set([
     "the",
     "a",
     "an",
