@@ -1,10 +1,12 @@
+import { IPageFetcher } from "./types/IPageFetcher.js";
+
 interface Option {
   timeout?: number;
   userAgent?: string;
 }
-class PageFetcher {
+class PageFetcher implements IPageFetcher{
   private readonly timeout: number;
-  private readonly userAgent: string;
+  public readonly userAgent: string;
   constructor(options: Option = {}) {
     this.timeout = options.timeout ?? 10000;
     this.userAgent = options.userAgent ?? "SearchBot/1.0";

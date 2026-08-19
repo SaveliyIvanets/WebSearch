@@ -1,4 +1,5 @@
 import { Tokenizer } from "./Tokenizer.js";
+import { IIndexStore } from "./types/IIndexStore.js"
 import { Logger } from "../logger/Logger.js";
 import fs from "fs";
 
@@ -6,7 +7,7 @@ const logger = new Logger({ prefix: "IndexStore" });
 
 type InvertedIndex = Record<string, Set<string>>;
 
-class IndexStore {
+class IndexStore implements IIndexStore {
   private invertedIndex: InvertedIndex = {};
 
   addDocument(docId: string, text: string): void {

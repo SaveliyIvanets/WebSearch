@@ -1,13 +1,13 @@
 import { Tokenizer } from "../indexer/Tokenizer.js";
-import { IndexStore } from "../indexer/types/IndexStore.js";
+import { IIndexStore } from "../indexer/types/IIndexStore.js";
 import { Logger } from "../logger/Logger.js";
 
 const logger = new Logger({prefix: "SearchEngine"});
 
 class SearchEngine {
-  private indexStore: IndexStore;
+  private indexStore: IIndexStore;
 
-  constructor(indexStore: IndexStore) {
+  constructor(indexStore: IIndexStore) {
     this.indexStore = indexStore;
   }
 
