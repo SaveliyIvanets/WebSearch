@@ -7,6 +7,9 @@ import { IRobotsParser } from "./types/IRobotsParser.js";
 import { IPageFetcher } from "./types/IPageFetcher.js";
 import { IHtmlParser } from "./types/IHtmlParser.js";
 import { ILinkExtractor } from "./types/ILinkExtractor.js";
+import { Logger } from "../logger/Logger.js";
+
+const logger = new Logger({ prefix: "Crawler" });
 
 interface Options {
   workerCount?: number;
@@ -60,6 +63,14 @@ class Crawler {
     const startUrlObj = new URL(startUrl);
     const baseDomain = startUrlObj.hostname;
 
+    logger.info("Crawler started", {
+      startUrl,
+      baseDomain,
+      workerCount: this.workerCount,
+      maxPages: this.maxPages,
+      maxDepth: this.maxDepth,
+    });
+
     await this.robotsParser.load(startUrl);
 
     this.queue.push({
@@ -87,6 +98,8 @@ class Crawler {
     }
 
     await Promise.all(workers);
+
+    logger.info("Crawler finished", { visitedPages: this.visited.size });
   }
 }
 

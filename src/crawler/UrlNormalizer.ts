@@ -1,3 +1,7 @@
+import { Logger } from "../logger/Logger.js";
+
+const logger = new Logger({ prefix: "UrlNormalizer" });
+
 class UrlNormalizer {
   static normalize(rawUrl: string): string | null {
     try {
@@ -13,8 +17,10 @@ class UrlNormalizer {
         normalized.pathname = normalized.pathname.replace(/\/+$/, "");
       }
       normalized.hostname = normalized.hostname.toLowerCase();
+      logger.debug("URL normalized", { rawUrl, normalized: normalized.href });
       return normalized.href;
     } catch (e) {
+      logger.warn("Invalid URL", { rawUrl });
       return null;
     }
   }

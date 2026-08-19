@@ -6,6 +6,9 @@ import { IIndexStore } from "../indexer/types/IIndexStore.js";
 import { IRobotsParser } from "./types/IRobotsParser.js";
 import { IHtmlParser } from "./types/IHtmlParser.js";
 import { ILinkExtractor } from "./types/ILinkExtractor.js";
+import { Logger } from "../logger/Logger.js";
+
+const logger = new Logger({ prefix: "Worker" });
 
 interface Option {
   queue: Queue<CrawlTask>;
@@ -46,6 +49,10 @@ class Worker {
   async run(baseDomain: string):  Promise<void> {
     while (true) {
       if (this.visited.size >= this.maxPages) {
+        logger.warn("Max pages reached", {
+          visited: this.visited.size,
+          maxPages: this.maxPages,
+        });
         break;
       }
       if (this.queue.isEmpty()) {
@@ -65,18 +72,22 @@ class Worker {
       if (this.visited.has(currentUrl)) continue;
       this.visited.add(currentUrl);
       this.state.activeWorkers++;
+      logger.debug("Processing task", { url: currentUrl, depth: currentDepth });
       const html = await this.pageFetcher.fetchText(currentUrl);
       this.state.activeWorkers--;
       if (!html) {
+        logger.warn("Page skipped: no content", { url: currentUrl });
         continue;
       }
       const { $, text } = this.htmlParser.parse(html);
       this.indexStore.addDocument(currentUrl, text);
+      logger.debug("Document indexed", { url: currentUrl, textLength: text.length });
       const foundLinks = this.linkExtractor.extractInternalLinks(
         $,
         currentUrl,
         baseDomain,
       );
+      logger.debug("Links extracted", { url: currentUrl, count: foundLinks.size });
       for (const link of foundLinks) {
         if (
           !this.visited.has(link) &&
