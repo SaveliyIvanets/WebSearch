@@ -6,8 +6,6 @@ interface ILinkExtractor {
         currentUrl: string,
         baseHostname: string,
       ): Set<string>
-
-    _isValidLink(href: string | null | undefined): href is string
 }
 
-export { ILinkExtractor }
+export { ILinkExtractor };

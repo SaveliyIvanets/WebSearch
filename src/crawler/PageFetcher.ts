@@ -1,4 +1,4 @@
-import { PageFetcher as IPageFetcher } from "./types/IPageFetcher.js";
+import { IPageFetcher } from "./types/IPageFetcher.js";
 
 interface Option {
   timeout?: number;
