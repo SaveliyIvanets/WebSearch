@@ -1,3 +1,8 @@
+import { IPageFetcher } from "./types/IPageFetcher.js";
+import { Logger } from "../logger/Logger.js";
+
+const logger = new Logger({ prefix: "PageFetcher" });
+
 interface Option {
   timeout?: number;
   userAgent?: string;
@@ -11,7 +16,7 @@ const RETRY_STATUSES = new Set([429, 503]);
 const DEFAULT_RETRY_DELAY = 2000;
 const MIN_RETRY_DELAY = 1000;
 
-class PageFetcher {
+class PageFetcher implements IPageFetcher{
   private readonly timeout: number;
   private readonly maxRedirects: number;
   private readonly maxRetries: number;
@@ -60,6 +65,7 @@ class PageFetcher {
   async fetchText(url: string): Promise<string | null> {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.timeout);
+    logger.debug("Fetching page", { url, timeout: this.timeout });
     try {
       return await this.fetchWithLimits(
         url,

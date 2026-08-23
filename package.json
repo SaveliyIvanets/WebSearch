@@ -1,5 +1,10 @@
 {
   "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc --watch"
+  },
   "dependencies": {
     "cheerio": "^1.2.0"
   },

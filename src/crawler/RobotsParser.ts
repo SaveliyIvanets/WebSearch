@@ -1,4 +1,8 @@
 import { PageFetcher } from "./PageFetcher.js";
+import { IRobotsParser } from "./types/IRobotsParser.js";
+import { Logger } from "../logger/Logger.js";
+
+const logger = new Logger({ prefix: "RobotsParser" });
 
 type PatternType = "allow" | "disallow";
 
@@ -37,7 +41,7 @@ class UrlPattern {
     }
 }
 
-class RobotsParser {
+class RobotsParser implements IRobotsParser {
     private readonly pageFetcher: PageFetcher;
     private rules: RobotsRules;
 
@@ -54,8 +58,19 @@ class RobotsParser {
 
   async load(origin: string): Promise<void> {
     const robotsUrl = new URL("/robots.txt", origin);
+    logger.info("Loading robots.txt", { url: robotsUrl.href });
     const html = await this.pageFetcher.fetchText(robotsUrl.href);
+    if (!html) {
+      logger.warn("robots.txt not found or empty", { origin });
+      return;
+    }
     this._parseRobotsTxt(html);
+    logger.debug("Robots rules loaded", {
+      allowed: this.rules.allowedPaths.length,
+      disallowed: this.rules.disallowedPaths.length,
+      crawlDelay: this.rules.crawlDelay,
+      sitemap: this.rules.sitemap,
+    });
   }
 
   getCrawlDelay() : number | null {
@@ -83,7 +98,11 @@ class RobotsParser {
                     if (isNewBestMatch) bestMatch = rule;
                 }
             }
-            return bestMatch === null || bestMatch.type === "allow";
+            const isAllowed = bestMatch === null || bestMatch.type === "allow";
+            if (!isAllowed) {
+                logger.debug("URL blocked by robots.txt", { url });
+            }
+            return isAllowed;
         } catch {
             return true;
         }
@@ -164,3 +183,5 @@ class RobotsParser {
     }
   }
 }
+
+export { RobotsParser };
