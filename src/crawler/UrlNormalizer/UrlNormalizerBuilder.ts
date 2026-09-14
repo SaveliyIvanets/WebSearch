@@ -26,7 +26,7 @@ import { DEFAULT_OPTIONS } from './DefaultOptions';
 import { DefaultDeserializer } from "v8";
 
 
-interface UrlNormalizerOptions {
+export interface UrlNormalizerOptions {
     sortQuery: boolean;
     removeTrackingParams: boolean;
     trackingParams: string[];
