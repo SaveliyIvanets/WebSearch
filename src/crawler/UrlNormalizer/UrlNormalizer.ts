@@ -3,7 +3,7 @@
 import {
     NormalizationPipeline,
     NormalizationContext
-} from './NormalizationPipeline.js';
+} from './pipeline/NormalizationPipeline.js';
 
 // типы
 import { UrlNormalizerOptions } from './UrlNormalizerBuilder.js'
