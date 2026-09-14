@@ -3,24 +3,24 @@
 import {
     NormalizationPipeline,
     NormalizationContext
-} from './NormalizationPipeline';
+} from './NormalizationPipeline.js';
 
 // типы
 import { UrlNormalizerOptions } from './UrlNormalizerBuilder.js'
 
 //шаги пайплайна
-import { FragmentRemovalStep } from './steps/FragmentRemovalStep';
-import { PortRemovalStep } from './steps/PortRemovalStep';
-import { TrailingSlashStep } from './steps/TrailingSlashStep';
-import { HostnameNormalizationStep } from './steps/HostnameNormalizationStep';
-import { QueryNormalizationStep } from './steps/QueryNormalizationStep';
-import { PercentEncodingStep } from './steps/PercentEncodingStep';
+import { FragmentRemovalStep } from './steps/FragmentRemovalStep.js';
+import { PortRemovalStep } from './steps/PortRemovalStep.js';
+import { TrailingSlashStep } from './steps/TrailingSlashStep.js';
+import { HostnameNormalizationStep } from './steps/HostnameNormalizationStep.js';
+import { QueryNormalizationStep } from './steps/QueryNormalizationStep.js';
+import { PercentEncodingStep } from './steps/PercentEncodingStep.js';
 
 //стратегии по умолчанию
-import { KeepFirstDuplicateStrategy } from './strategies/duplicate/KeepFirstDuplicateStrategy';
-import { KeepWWWStrategy } from './strategies/www/KeepWWWStrategy';
-import { PunycodeIDNStrategy } from './strategies/idn/PunycodeIDNStrategy';
-import { TrackingRemovalStrategy } from './strategies/tracking/TrackingRemovalStrategy';
+import { KeepFirstDuplicateStrategy } from './strategies/duplicate/KeepFirstDuplicateStrategy.js';
+import { KeepWWWStrategy } from './strategies/www/KeepWWWStrategy.js';
+import { PunycodeIDNStrategy } from './strategies/idn/PunycodeIDNStrategy.js';
+import { TrackingRemovalStrategy } from './strategies/tracking/TrackingRemovalStrategy.js';
 
 export class UrlNormalizer {
     private readonly pipeline: NormalizationPipeline;
