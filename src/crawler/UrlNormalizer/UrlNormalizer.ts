@@ -1,9 +1,7 @@
 
 // класс пайплайна и контекста для него(вроде класс)
-import {
-    NormalizationPipeline,
-    NormalizationContext
-} from './pipeline/NormalizationPipeline.js';
+import { NormalizationPipeline } from './pipeline/NormalizationPipeline.js';
+import { NormalizationContext } from './pipeline/NormalizationContext.js';
 
 // типы
 import { UrlNormalizerOptions } from './UrlNormalizerBuilder.js'
@@ -26,7 +24,7 @@ export class UrlNormalizer {
     private readonly pipeline: NormalizationPipeline;
     private readonly options: UrlNormalizerOptions;
 
-    constructor(options: UrlNormalizerOptions = {}) {
+    constructor(options: UrlNormalizerOptions) {
         this.options = this.normalizeOptions(options);
         this.pipeline = this.buildPipeline();
     }
@@ -69,7 +67,7 @@ export class UrlNormalizer {
 
     normalize(rawUrl: string): string | null {
         try {
-            const context = NormalizationContext(rawUrl, this.options);
+            const context = new NormalizationContext(rawUrl, this.options);
             const result = this.pipeline.execute(context);
 
             if (!result) return null;
