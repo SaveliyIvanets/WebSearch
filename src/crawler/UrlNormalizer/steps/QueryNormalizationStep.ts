@@ -3,11 +3,12 @@ import { NormalizationContext } from '../pipeline/NormalizationContext.js';
 import { DuplicateParamStrategy } from '../strategies/duplicate/DuplicateParamStrategy.js';
 import { QueryParser } from '../utils/QueryParser.js';
 
+type QueryParam = [string, string];
 
 export class QueryNormalizationStep implements NormalizerStep {
     constructor(
         private readonly duplicateStrategy: DuplicateParamStrategy,
-        private readonly trackingStrategy: string[],
+        private readonly trackingParams: Set<string>,
         private readonly sortQuery: boolean,
         private readonly removeEmptyParams: boolean
     ) {}
@@ -19,20 +20,29 @@ export class QueryNormalizationStep implements NormalizerStep {
             return context;
         }
 
-        let entries = QueryParser.parse(query);
+        let entries = this.parseParams(query);
 
         if (this.removeEmptyParams) {
-            //добить
-            //проверить, были ли
+            const beforeRemove = entries;
+            entries = entries.filter(param => param[1] !== "");
+            if (entries.length !== beforeRemove.length) {
+                context.setMetadata('isEmptyRemoved', true);
+            }
         }
 
-        if (this.trackingStrategy.length) {
-            //добить
-            //проверить, удалялись ли
+        if (this.trackingParams.size) {
+            const beforeTracking = entries;
+            entries = entries.filter(param => !this.trackingParams.has(param[0]))
+            if (entries.length !== beforeTracking.length) {
+                context.setMetadata('isTrackingRemoved', true);
+            }
         }
 
+        const beforeDuplicated = entries;
         entries = this.duplicateStrategy.apply(entries);
-        // проверить, изменился ли entries
+        if (entries.length !== beforeDuplicated.length) {
+            context.setMetadata('isTrackingRemoved', true);
+        }
 
         if (this.sortQuery) {
             entries = this.sortEntries(entries);
@@ -43,15 +53,42 @@ export class QueryNormalizationStep implements NormalizerStep {
         return context;
     }
 
-    private sortEntries(entries: [string, string][]): [string, string][] {
+    private sortEntries(entries: QueryParam[]): QueryParam[] {
         return entries.sort(([a], [b]) => a.localeCompare(b));
     }
 
-    private buildQueryString(entries: [string, string][]): string {
+    private buildQueryString(entries: QueryParam[]): string {
         if (entries.length === 0) {
           return '';
         }
         return '?' + entries.map(([k, v]) => `${k}=${v}`).join('&');
       }
+
+    private parseParams(query: string): QueryParam[] {
+        let params = query.startsWith('?') ? query.slice(1) : query;
+        if (!params) {
+            return [];
+        }
+        
+        const result: QueryParam[] = [];
+        const pairs = params.split('&');
+
+        for (const pair of pairs) {
+            let key: string;
+            let value: string;
+            const equalIndex = pair.indexOf('=');
+
+            if (equalIndex === -1) {
+                key = pair;
+                value = "";
+            } else {
+                key = pair.substring(0, equalIndex);
+                value = pair.substring(equalIndex + 1);
+            }
+
+            result.push([key, value]);
+        }
+
+        return result;
     }
 }
