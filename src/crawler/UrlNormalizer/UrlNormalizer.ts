@@ -3,7 +3,7 @@
 import { NormalizationPipeline } from './pipeline/NormalizationPipeline.js';
 import { NormalizationContext } from './pipeline/NormalizationContext.js';
 
-// типы
+// интерфейсы
 import { UrlNormalizerOptions } from './UrlNormalizerBuilder.js'
 
 //шаги пайплайна
@@ -16,9 +16,8 @@ import { PercentEncodingStep } from './steps/PercentEncodingStep.js';
 
 //стратегии по умолчанию
 import { KeepFirstDuplicateStrategy } from './strategies/duplicate/KeepFirstDuplicateStrategy.js';
-import { KeepWWWStrategy } from './strategies/www/KeepWWWStrategy.js';
+import { KeepWWWStrategy } from './strategies/wwwStrategies.js';
 import { PunycodeIDNStrategy } from './strategies/idn/PunycodeIDNStrategy.js';
-import { TrackingRemovalStrategy } from './strategies/tracking/TrackingRemovalStrategy.js';
 
 export class UrlNormalizer {
     private readonly pipeline: NormalizationPipeline;
@@ -34,16 +33,13 @@ export class UrlNormalizer {
             new FragmentRemovalStep(),
             new PortRemovalStep(),
             new HostnameNormalizationStep(
-                this.options.idnStratage ?? new PunycodeIDNStrategy(),
+                this.options.idnStrategy ?? new PunycodeIDNStrategy(),
                 this.options.wwwStrategy ?? new KeepWWWStrategy()
             ),
             new PercentEncodingStep(),
             new QueryNormalizationStep(
                 this.options.duplicateStrategy ?? new KeepFirstDuplicateStrategy(),
-                this.options.trackingStrategy ?? new TrackingRemovalStrategy(
-                    this.options.trackingParams,
-                    this.options.removeTrackingParams ?? true
-                ),
+                this.options.trackingParams ?? new Set(),
                 this.options.sortQuery ?? true,
                 this.options.removeEmptyParams ?? true
             ),

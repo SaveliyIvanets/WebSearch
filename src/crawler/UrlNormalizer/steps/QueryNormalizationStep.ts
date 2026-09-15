@@ -1,7 +1,6 @@
 import { NormalizerStep } from '../pipeline/NormalizerStep.js';
 import { NormalizationContext } from '../pipeline/NormalizationContext.js';
 import { DuplicateParamStrategy } from '../strategies/duplicate/DuplicateParamStrategy.js';
-import { QueryParser } from '../utils/QueryParser.js';
 
 type QueryParam = [string, string];
 

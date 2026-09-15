@@ -1,29 +1,24 @@
 import { UrlNormalizer } from "./UrlNormalizer.js"
 
 // стратегии
-import {
-    DuplicateParamStrategy,
-    KeepFirstDuplicateStrategy,
-    KeepLastDuplicateStrategy,
-    MergeDuplicateStrategy,
-    CompositeDuplicateStrategy,
-  } from '../strategies/duplicate';
+
+import { DuplicateParamStrategy } from "./strategies/duplicate/DuplicateParamStrategy.js";
+import { KeepFirstDuplicateStrategy } from "./strategies/duplicate/KeepFirstDuplicateStrategy.js";
+import { KeepLastDuplicateStrategy } from "./strategies/duplicate/KeepLastDuplicateStrategy.js";
+import { MergeDuplicateStrategy } from "./strategies/duplicate/MergeDuplicateStrategy.js";
   
 import {
     WWWStrategy,
     RemoveWWWStrategy,
     AddWWWStrategy,
     KeepWWWStrategy,
-} from '../strategies/www';
+} from './strategies/wwwStrategies.js';
 
-import {
-    IDNStrategy,
-    PunycodeIDNStrategy,
-    NoOpIDNStrategy,
-} from '../strategies/idn';
+import { IDNStrategy } from "./strategies/idn/IDNStrategy.js";
+import { PunycodeIDNStrategy } from "./strategies/idn/PunycodeIDNStrategy.js";
+import { NoOpIDNStrategy } from "./strategies/idn/NoOpIDNStrategy.js";
 
 import { DEFAULT_OPTIONS } from './DefaultOptions';
-import { DefaultDeserializer } from "v8";
 
 
 export interface UrlNormalizerOptions {
@@ -76,12 +71,8 @@ class UrlNormalizerBuilder {
         return this.withDuplicateStrategy(new KeepLastDuplicateStrategy());
     }
 
-    withMergeDuplicates(): this {
-        return this.withDuplicateStrategy(new MergeDuplicateStrategy());
-    }
-
-    withCompositeDuplicateStrategy(strategies: DuplicateParamStrategy[]): this {
-        return this.withDuplicateStrategy(new CompositeDuplicateStrategy(strategies));
+    withMergeDuplicates(join: string = ','): this {
+        return this.withDuplicateStrategy(new MergeDuplicateStrategy(join));
     }
 
     // ============ WWW СТРАТЕГИИ ============
