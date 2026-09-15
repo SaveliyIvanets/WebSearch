@@ -1,7 +1,7 @@
 import { NormalizationContext } from "../pipeline/NormalizationContext.js";
 import { NormalizerStep } from "../pipeline/NormalizerStep.js";
 
-class TrailingSlashStep implements NormalizerStep {
+export class TrailingSlashStep implements NormalizerStep {
   
     process(context: NormalizationContext): NormalizationContext {      
       const path = context.url.pathname;
