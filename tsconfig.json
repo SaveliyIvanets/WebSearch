@@ -9,7 +9,10 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "paths": {
+      "punycode/": ["./node_modules/@types/punycode"]
+    }
   },
   "include": ["src/**/*"]
 }
