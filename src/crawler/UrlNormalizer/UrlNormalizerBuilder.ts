@@ -31,7 +31,7 @@ export interface UrlNormalizerOptions {
     idnStrategy: IDNStrategy;
 }
 
-class UrlNormalizerBuilder {
+export class UrlNormalizerBuilder {
     private options: Partial<UrlNormalizerOptions> = {};
 
     // ============ QUERY ОПЦИИ ============
