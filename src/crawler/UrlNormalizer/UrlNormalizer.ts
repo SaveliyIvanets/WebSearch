@@ -32,17 +32,9 @@ export class UrlNormalizer {
         const steps = [
             new FragmentRemovalStep(),
             new PortRemovalStep(),
-            new HostnameNormalizationStep(
-                this.options.idnStrategy ?? new PunycodeIDNStrategy(),
-                this.options.wwwStrategy ?? new KeepWWWStrategy()
-            ),
+            new HostnameNormalizationStep(),
             new PercentEncodingStep(),
-            new QueryNormalizationStep(
-                this.options.duplicateStrategy ?? new KeepFirstDuplicateStrategy(),
-                this.options.trackingParams ?? new Set(),
-                this.options.sortQuery ?? true,
-                this.options.removeEmptyParams ?? true
-            ),
+            new QueryNormalizationStep(),
             new TrailingSlashStep()
         ];
 

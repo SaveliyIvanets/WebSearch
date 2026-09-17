@@ -5,12 +5,8 @@ import { WWWStrategy } from '../strategies/www/WWWStrategy.js';
 
 
 export class HostnameNormalizationStep implements NormalizerStep {
-    constructor (
-        private readonly IdnStrategy: IDNStrategy,
-        private readonly wwwStrategy: WWWStrategy
-    ) {}
-
     process(context: NormalizationContext) {
+        const opts = context.options;
         let hostname = context.url.hostname;
         
         //нижний регистр
@@ -18,13 +14,13 @@ export class HostnameNormalizationStep implements NormalizerStep {
 
         //IDN стратегия
         const beforeIdn = hostname;
-        hostname = this.IdnStrategy.apply(hostname);
+        hostname = opts.idnStrategy.apply(hostname);
         if (hostname !== beforeIdn) {
             context.setMetadata('idnConverted', true);
         }
 
         const beforeWWW = hostname;
-        hostname = this.wwwStrategy.apply(hostname);
+        hostname = opts.wwwStrategy.apply(hostname);
         if (hostname !== beforeWWW) {
             context.setMetadata('wwwChanged', true);
         }
