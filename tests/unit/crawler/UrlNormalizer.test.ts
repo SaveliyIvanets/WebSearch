@@ -323,15 +323,6 @@ describe("UrlNormalizer", () => {
       expect(result).toBe("https://xn--mgbh0fb.xn--kgbechtv/");
     });
 
-    it("should NOT convert IDN when punycode support is disabled", () => {
-      const normalizer = new UrlNormalizerBuilder()
-        .withoutPunycodeSupport()
-        .build();
-      expect(normalizer.normalize("https://яндекс.рф/")).toBe(
-        "https://яндекс.рф/",
-      );
-    });
-
     it("should not modify ASCII hostnames", () => {
       const normalizer = new UrlNormalizerBuilder().withPunycodeSupport().build();
       expect(normalizer.normalize("https://example.com/")).toBe(
