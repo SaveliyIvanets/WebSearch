@@ -18,7 +18,7 @@ import { IDNStrategy } from "./strategies/idn/IDNStrategy.js";
 import { PunycodeIDNStrategy } from "./strategies/idn/PunycodeIDNStrategy.js";
 import { NoOpIDNStrategy } from "./strategies/idn/NoOpIDNStrategy.js";
 
-import { DEFAULT_OPTIONS } from './DefaultOptions';
+import { DEFAULT_OPTIONS } from './DefaultOptions.js';
 
 
 export interface UrlNormalizerOptions {
