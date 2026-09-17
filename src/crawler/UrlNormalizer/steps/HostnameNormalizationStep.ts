@@ -1,7 +1,5 @@
 import { NormalizerStep } from '../pipeline/NormalizerStep.js';
 import { NormalizationContext } from '../pipeline/NormalizationContext.js';
-import { IDNStrategy } from '../strategies/idn/IDNStrategy.js';
-import { WWWStrategy } from '../strategies/www/WWWStrategy.js';
 
 
 export class HostnameNormalizationStep implements NormalizerStep {
