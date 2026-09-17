@@ -13,6 +13,7 @@ import { TrailingSlashStep } from './steps/TrailingSlashStep.js';
 import { HostnameNormalizationStep } from './steps/HostnameNormalizationStep.js';
 import { QueryNormalizationStep } from './steps/QueryNormalizationStep.js';
 import { PercentEncodingStep } from './steps/PercentEncodingStep.js';
+import { ClearQuestionMarkStep } from './steps/ClearQuestionMarkStep.js';
 
 //стратегии по умолчанию
 import { KeepFirstDuplicateStrategy } from './strategies/duplicate/KeepFirstDuplicateStrategy.js';
@@ -35,7 +36,8 @@ export class UrlNormalizer {
             new HostnameNormalizationStep(),
             new PercentEncodingStep(),
             new QueryNormalizationStep(),
-            new TrailingSlashStep()
+            new TrailingSlashStep(),
+            new ClearQuestionMarkStep()
         ];
 
         return new NormalizationPipeline(steps);
