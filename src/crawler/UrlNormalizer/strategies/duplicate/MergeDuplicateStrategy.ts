@@ -7,7 +7,7 @@ export class MergeDuplicateStrategy implements DuplicateParamStrategy {
         const unique_params: Map<string, string> = new Map<string, string>();
         for (const [name, val] of params) {
             const prev = unique_params.get(name);
-            unique_params.set(name, prev === null ? val : `${prev}${this.join}${val}`);
+            unique_params.set(name, prev === undefined ? val : `${prev}${this.join}${val}`);
         }
 
         return [...unique_params];
