@@ -4,7 +4,6 @@ import { UrlNormalizerOptions } from './UrlNormalizerBuilder.js';
 
 import { KeepFirstDuplicateStrategy } from './strategies/duplicate/KeepFirstDuplicateStrategy.js';
 import { KeepWWWStrategy } from './strategies/wwwStrategies.js';
-import { PunycodeIDNStrategy } from './strategies/idn/PunycodeIDNStrategy.js';
 
 /**
  * Список трекинговых/аналитических параметров по умолчанию.
@@ -77,5 +76,4 @@ export const DEFAULT_OPTIONS: UrlNormalizerOptions = {
   // Стратегии
   duplicateStrategy: new KeepFirstDuplicateStrategy(),
   wwwStrategy: new KeepWWWStrategy(),
-  idnStrategy: new PunycodeIDNStrategy(),
 };

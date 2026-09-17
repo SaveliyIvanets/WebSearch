@@ -10,13 +10,6 @@ export class HostnameNormalizationStep implements NormalizerStep {
         //нижний регистр
         hostname = hostname.toLowerCase();
 
-        //IDN стратегия
-        const beforeIdn = hostname;
-        hostname = opts.idnStrategy.apply(hostname);
-        if (hostname !== beforeIdn) {
-            context.setMetadata('idnConverted', true);
-        }
-
         const beforeWWW = hostname;
         hostname = opts.wwwStrategy.apply(hostname);
         if (hostname !== beforeWWW) {

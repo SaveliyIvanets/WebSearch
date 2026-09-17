@@ -18,7 +18,6 @@ import { ClearQuestionMarkStep } from './steps/ClearQuestionMarkStep.js';
 //стратегии по умолчанию
 import { KeepFirstDuplicateStrategy } from './strategies/duplicate/KeepFirstDuplicateStrategy.js';
 import { KeepWWWStrategy } from './strategies/wwwStrategies.js';
-import { PunycodeIDNStrategy } from './strategies/idn/PunycodeIDNStrategy.js';
 
 export class UrlNormalizer {
     private readonly pipeline: NormalizationPipeline;
@@ -50,7 +49,6 @@ export class UrlNormalizer {
           removeEmptyParams: options.removeEmptyParams ?? true,
           duplicateStrategy: options.duplicateStrategy ?? new KeepFirstDuplicateStrategy(),
           wwwStrategy: options.wwwStrategy ?? new KeepWWWStrategy(),
-          idnStrategy: options.idnStrategy ?? new PunycodeIDNStrategy(),
           trackingParams: options.trackingParams ?? [],
         };
     }

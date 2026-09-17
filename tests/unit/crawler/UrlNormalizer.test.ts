@@ -305,26 +305,26 @@ describe("UrlNormalizer", () => {
 
   describe("IDN hostname support", () => {
     it("should convert Cyrillic hostname to Punycode", () => {
-      const normalizer = new UrlNormalizerBuilder().withPunycodeSupport().build();
+      const normalizer = new UrlNormalizerBuilder().build();
       expect(normalizer.normalize("https://яндекс.рф/")).toBe(
         "https://xn--d1acpjx3f.xn--p1ai/",
       );
     });
 
     it("should convert Chinese hostname to Punycode", () => {
-      const normalizer = new UrlNormalizerBuilder().withPunycodeSupport().build();
+      const normalizer = new UrlNormalizerBuilder().build();
       const result = normalizer.normalize("https://中国.中国/");
       expect(result).toBe("https://xn--fiqs8s.xn--fiqs8s/");
     });
 
     it("should convert Arabic hostname to Punycode", () => {
-      const normalizer = new UrlNormalizerBuilder().withPunycodeSupport().build();
+      const normalizer = new UrlNormalizerBuilder().build();
       const result = normalizer.normalize("https://مثال.إختبار/");
       expect(result).toBe("https://xn--mgbh0fb.xn--kgbechtv/");
     });
 
     it("should not modify ASCII hostnames", () => {
-      const normalizer = new UrlNormalizerBuilder().withPunycodeSupport().build();
+      const normalizer = new UrlNormalizerBuilder().build();
       expect(normalizer.normalize("https://example.com/")).toBe(
         "https://example.com/",
       );
@@ -413,7 +413,6 @@ describe("UrlNormalizer", () => {
         .withSortQuery(true)
         .withTrackingRemoval(true)
         .withWWWRemoval()
-        .withPunycodeSupport()
         .build();
 
       const input =
@@ -445,7 +444,7 @@ describe("UrlNormalizer", () => {
     });
 
     it("should preserve non-ASCII path even with punycode support", () => {
-      const normalizer = new UrlNormalizerBuilder().withPunycodeSupport().build();
+      const normalizer = new UrlNormalizerBuilder().build();
       const result = normalizer.normalize("https://example.com/привет");
       // Путь кодируется percent-encoding, а не Punycode
       expect(result).toContain("%D0%BF%D1%80%D0%B8%D0%B2%D0%B5%D1%82");

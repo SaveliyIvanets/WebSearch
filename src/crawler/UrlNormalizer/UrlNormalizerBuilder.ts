@@ -14,10 +14,6 @@ import {
     KeepWWWStrategy,
 } from './strategies/wwwStrategies.js';
 
-import { IDNStrategy } from "./strategies/idn/IDNStrategy.js";
-import { PunycodeIDNStrategy } from "./strategies/idn/PunycodeIDNStrategy.js";
-import { NoOpIDNStrategy } from "./strategies/idn/NoOpIDNStrategy.js";
-
 import { DEFAULT_OPTIONS } from './DefaultOptions.js';
 
 
@@ -28,7 +24,6 @@ export interface UrlNormalizerOptions {
     removeEmptyParams: boolean;
     duplicateStrategy: DuplicateParamStrategy;
     wwwStrategy: WWWStrategy;
-    idnStrategy: IDNStrategy;
 }
 
 export class UrlNormalizerBuilder {
@@ -92,21 +87,6 @@ export class UrlNormalizerBuilder {
 
     withWWWKeep(): this {
         return this.withWWWStrategy(new KeepWWWStrategy());
-    }
-
-    // ============ IDN СТРАТЕГИИ ============
-
-    withIdnStrategy(strategy: IDNStrategy): this {
-        this.options.idnStrategy = strategy;
-        return this;
-    }
-    
-    withPunycodeSupport(): this {
-        return this.withIdnStrategy(new PunycodeIDNStrategy());
-    }
-    
-    withoutPunycodeSupport(): this {
-        return this.withIdnStrategy(new NoOpIDNStrategy());
     }
 
     // ============ ПОСТРОЕНИЕ ============
