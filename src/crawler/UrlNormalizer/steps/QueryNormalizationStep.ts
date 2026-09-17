@@ -5,15 +5,9 @@ import { DuplicateParamStrategy } from '../strategies/duplicate/DuplicateParamSt
 type QueryParam = [string, string];
 
 export class QueryNormalizationStep implements NormalizerStep {
-    constructor(
-        private readonly duplicateStrategy: DuplicateParamStrategy,
-        private readonly trackingParams: Set<string>,
-        private readonly sortQuery: boolean,
-        private readonly removeEmptyParams: boolean
-    ) {}
-
     process(context: NormalizationContext) {
         const query = context.url.search;
+        const opts = context.options;
 
         if (!query || query === '?') {
             return context;
@@ -21,7 +15,7 @@ export class QueryNormalizationStep implements NormalizerStep {
 
         let entries = this.parseParams(query);
 
-        if (this.removeEmptyParams) {
+        if (opts.removeEmptyParams) {
             const beforeRemove = entries;
             entries = entries.filter(param => param[1] !== "");
             if (entries.length !== beforeRemove.length) {
@@ -29,21 +23,21 @@ export class QueryNormalizationStep implements NormalizerStep {
             }
         }
 
-        if (this.trackingParams.size) {
+        if (opts.removeTrackingParams) {
             const beforeTracking = entries;
-            entries = entries.filter(param => !this.trackingParams.has(param[0]))
+            entries = entries.filter(param => !opts.trackingParams.has(param[0]))
             if (entries.length !== beforeTracking.length) {
                 context.setMetadata('isTrackingRemoved', true);
             }
         }
 
         const beforeDuplicated = entries;
-        entries = this.duplicateStrategy.apply(entries);
+        entries = opts.duplicateStrategy.apply(entries);
         if (entries.length !== beforeDuplicated.length) {
             context.setMetadata('isTrackingRemoved', true);
         }
 
-        if (this.sortQuery) {
+        if (opts.sortQuery) {
             entries = this.sortEntries(entries);
         }
 
