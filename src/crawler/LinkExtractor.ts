@@ -1,11 +1,13 @@
-import { UrlNormalizer } from "./UrlNormalizer.js";
 import { ILinkExtractor } from "./types/ILinkExtractor.js";
 import { CheerioAPI } from "cheerio";
 import { Logger } from "../logger/Logger.js";
+import { UrlNormalizer } from "./UrlNormalizer/UrlNormalizer.js";
 
 const logger = new Logger({ prefix: "LinkExtractor" });
 
 class LinkExtractor implements ILinkExtractor {
+  constructor (private readonly urlNormalizer: UrlNormalizer) {};
+
   extractInternalLinks(
     $: CheerioAPI,
     currentUrl: string,
@@ -20,7 +22,7 @@ class LinkExtractor implements ILinkExtractor {
         if (absoluteUrl.hostname !== baseHostname) {
           return;
         }
-        const normalized = UrlNormalizer.normalize(absoluteUrl.href);
+        const normalized = this.urlNormalizer.normalize(absoluteUrl.href);
         if (normalized) {
           internalLinks.add(normalized);
         }

@@ -1,9 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { LinkExtractor } from "../../../src/crawler/LinkExtractor.js";
 import { HtmlParser } from "../../../src/crawler/HtmlParser.js";
+import { UrlNormalizerBuilder } from "../../../src/crawler/UrlNormalizer/UrlNormalizerBuilder.js";
 
 describe("LinkExtractor", () => {
-  const linkExtractor = new LinkExtractor();
+  const builder = new UrlNormalizerBuilder();
+  const linkExtractor = new LinkExtractor(builder.build());
   const htmlParser = new HtmlParser();
 
   it("should extract internal links and ignore external or invalid protocols", () => {
