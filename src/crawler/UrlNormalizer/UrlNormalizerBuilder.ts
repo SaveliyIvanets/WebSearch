@@ -24,7 +24,7 @@ import { DEFAULT_OPTIONS } from './DefaultOptions';
 export interface UrlNormalizerOptions {
     sortQuery: boolean;
     removeTrackingParams: boolean;
-    trackingParams: string[];
+    trackingParams: Set<string>;
     removeEmptyParams: boolean;
     duplicateStrategy: DuplicateParamStrategy;
     wwwStrategy: WWWStrategy;
@@ -46,7 +46,7 @@ class UrlNormalizerBuilder {
         return this;
     }
 
-    withCustomTrackingParams(params: string[]): this {
+    withCustomTrackingParams(params: Set<string>): this {
         this.options.trackingParams = params;
         return this;
     }
